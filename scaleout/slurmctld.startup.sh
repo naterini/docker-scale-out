@@ -29,6 +29,9 @@ then
 		name=$(printf "node%02d" $i)
 		echo "NodeName=$name $props" >> /etc/slurm/slurm.conf
 	done
+
+	scontrol token username=slurm lifespan=9999999 | sed 's#SLURM_JWT=##g' > /auth/slurm
+	chmod 0755 /auth/slurm
 else
 	while true
 	do

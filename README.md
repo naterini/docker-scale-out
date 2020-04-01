@@ -24,10 +24,23 @@ Login Nodes:
   * login
 
 Kibana:
- * View http://localhost:5601/
+  * View http://localhost:5601/
 
 Elasticsearch:
- * View http://localhost:9200/
+  * View http://localhost:9200/
+
+Proxy:
+  * Auth REST API http://localhost:8080/auth
+  * Query REST API http://localhost:8080/slurm/
+
+Nginx Proxy node:
+ * proxy
+
+Rest API Nodes:
+  * rest
+
+## Multiple Instances
+Each cluster must have a unique class B subnet. The default SUBNET="10.11".
 
 ## To build and run:
 
@@ -96,4 +109,17 @@ vm.max_map_count=262144
 
 ## Caveats
 
-IPv6 does not work in Docker currently. All connections must be IPv4.
+All connections must be IPv4.
+The number of CPU threads on the host are multiplied by the number of nodes. Do not attempt to use computationally intensive applications.
+
+## Docker work-arounds:
+
+```
+ERROR: Pool overlaps with other one on this address space
+```
+Call this:
+```
+docker-compose down
+docker network prune -f
+sudo systemctl restart docker
+```

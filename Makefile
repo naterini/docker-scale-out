@@ -6,7 +6,7 @@ default: run
 	bash buildout.sh > ./docker-compose.yml
 
 build: ./docker-compose.yml
-	env COMPOSE_HTTP_TIMEOUT=360 docker-compose up --build --remove-orphans -d
+	env COMPOSE_HTTP_TIMEOUT=3000 docker-compose up --build --remove-orphans -d
 
 stop:
 	docker-compose down
