@@ -1,0 +1,8 @@
+set my_cluster "scaleout-slurmctld"
+set slurm_dir "/usr/local/"
+set build_dir "/root/slurm/"
+set my_version "master"
+set my_slurm_base "/usr/local/"
+set src_dir "/root/slurm/"
+set partition "debug"
+set use_pmi 1

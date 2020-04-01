@@ -1,0 +1,7 @@
+CREATE USER 'slurm'@'%' IDENTIFIED BY 'password';
+CREATE DATABASE IF NOT EXISTS slurm_acct_db;
+GRANT ALL ON slurm_acct_db.* TO 'slurm'@'%';
+SET global log_output = 'FILE';
+SET global general_log_file='/var/log/mysql/mysql_general.log';
+SET global general_log = 1;
+FLUSH PRIVILEGES;

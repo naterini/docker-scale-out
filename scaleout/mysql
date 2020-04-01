@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/bin/mysql --connect_timeout=2 --user=slurm --password=password --host=db "$@"
