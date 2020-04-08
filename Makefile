@@ -12,7 +12,7 @@ stop:
 	docker-compose down
 
 set_nocache:
-BUILD := build --no-cache
+	$(eval BUILD := build --no-cache)
 
 nocache: set_nocache build
 
