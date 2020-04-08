@@ -1,19 +1,20 @@
 HOST ?= mgmtnode
-
+BUILD ?= up --build --remove-orphans -d
 default: run
 
 ./docker-compose.yml: buildout.sh
 	bash buildout.sh > ./docker-compose.yml
 
 build: ./docker-compose.yml
-	env COMPOSE_HTTP_TIMEOUT=3000 docker-compose up --build --remove-orphans -d
+	env COMPOSE_HTTP_TIMEOUT=3000 docker-compose $(BUILD)
 
 stop:
 	docker-compose down
 
-nocache:
-	unlink docker-compose.yml
-	docker-compose build --no-cache
+set_nocache:
+	$(eval BUILD := build --no-cache)
+
+nocache: set_nocache build
 
 clean:
 	docker-compose down --remove-orphans -t1 -v
