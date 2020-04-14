@@ -15,6 +15,10 @@ then
     ports:
       - 8080:8080
 "
+else
+	ES_PORTS=
+	KIBANA_PORTS=
+	PROXY_PORTS=
 fi
 
 SUBNET=${SUBNET:-"10.11"}
