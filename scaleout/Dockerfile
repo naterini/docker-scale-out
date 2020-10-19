@@ -24,7 +24,7 @@ WORKDIR /root/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
 RUN mkdir -p /etc/slurm /etc/pmix /var/log/mysql/
 RUN git clone --depth 1 --single-branch -b release-2.0.22-stable https://github.com/libevent/libevent.git /root/libevent/
-RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git /root/hdf5
+RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://github.com/HDFGroup/hdf5.git /root/hdf5
 WORKDIR /root/hdf5
 RUN ./configure --prefix=/usr/local/ >/dev/null && make -j install >/dev/null
 WORKDIR /root/libevent
