@@ -141,6 +141,8 @@ RUN mkdir -p /etc/PDSH && \
 	echo -e "\nalias l='ls -alF'\n" >> /etc/bashrc
 
 COPY slurm/* /etc/slurm/
+RUN chmod 0600 /etc/slurm/slurmdbd.conf
+RUN chown slurm:slurm /etc/slurm/slurmdbd.conf
 COPY my.cnf /etc/
 RUN sed -e "s#{SUBNET}#${SUBNET}#g" -i /etc/my.cnf
 RUN ln -s /etc/my.cnf /usr/local/etc/my.cnf
