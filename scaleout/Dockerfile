@@ -15,7 +15,7 @@ RUN yum -y install \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
 	openssh-server openssh-client pam-devel xterm gfortran \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
-	libyaml-devel mlocate
+	libyaml-devel mlocate gettext-devel texinfo
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
 WORKDIR /root/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
@@ -73,7 +73,6 @@ RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/u
 RUN	make -j >/dev/null && make install >/dev/null
 WORKDIR /root
 RUN git clone --depth 1 --branch msmtp-1.8.6 https://github.com/marlam/msmtp-mirror.git msmtp
-RUN yum install -y gettext-devel texinfo
 WORKDIR /root/msmtp
 RUN autoreconf -i && ./configure && make -j >/dev/null && make install >/dev/null && \
 	ln -nfs /usr/local/bin/msmtp /usr/sbin/sendmail && \
