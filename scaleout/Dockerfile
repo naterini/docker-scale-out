@@ -15,7 +15,7 @@ RUN yum -y install \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
 	openssh-server openssh-client pam-devel xterm gfortran \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
-	libyaml-devel mlocate gettext-devel texinfo
+	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
 WORKDIR /root/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
@@ -86,6 +86,16 @@ RUN postconf -e "mydestination = cluster scaleout localhost.localdomain localhos
 	postconf -e "recipient_delimiter = +"
 RUN newaliases
 RUN postconf -e "mydestination = login login.localdomain cluster scaleout localhost.localdomain, localhost"
+
+#Install OpenAPI generator jar directly (installing from source is very slow)
+RUN mkdir -p /usr/local/jar/
+RUN curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.3.1/openapi-generator-cli-4.3.1.jar -o /usr/local/jar/openapi-generator-cli.jar
+RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
+WORKDIR /root/
+#https://pypi.org/project/openapi-python-client/
+RUN /usr/local/bin/openapi-generator-cli generate -i /root/slurm/src/slurmrestd/plugins/openapi/v0.0.36/openapi.json -g python -o /root/py_api_client
+WORKDIR /root/py_api_client
+RUN python3 setup.py install
 
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
