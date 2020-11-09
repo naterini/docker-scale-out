@@ -130,8 +130,8 @@ RUN echo -e '#%PAM-1.0\naccount    sufficient   pam_slurm_adopt.so\n' | cat - /e
 RUN echo -e 'SlurmdSpoolDir=/var/spool/slurm/spool' > /etc/nss_slurm.conf
 
 #active slurm nss
-RUN awk '{if (match($1, /^(passwd|group)/)) {print $1, "slurm", $2, $3} else {print $0}}' > /etc/nsswitch2.conf </etc/nsswitch.conf && \
-	mv /etc/nsswitch2.conf /etc/nsswitch.conf
+#RUN awk '{if (match($1, /^(passwd|group)/)) {print $1, "slurm", $2, $3} else {print $0}}' > /etc/nsswitch2.conf </etc/nsswitch.conf && \
+#	mv /etc/nsswitch2.conf /etc/nsswitch.conf
 
 RUN mkdir -p /etc/PDSH && \
 	echo -e "node00\nnode01\nnode02\nnode03\nnode04\nnode05\nnode06\nnode07\nnode08\nnode09" > /etc/PDSH/hosts && \
