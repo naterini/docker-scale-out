@@ -91,11 +91,7 @@ RUN postconf -e "mydestination = login login.localdomain cluster scaleout localh
 RUN mkdir -p /usr/local/jar/
 RUN curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.3.1/openapi-generator-cli-4.3.1.jar -o /usr/local/jar/openapi-generator-cli.jar
 RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
-WORKDIR /root/
 #https://pypi.org/project/openapi-python-client/
-RUN /usr/local/bin/openapi-generator-cli generate -i /root/slurm/src/slurmrestd/plugins/openapi/v0.0.36/openapi.json -g python -o /root/py_api_client
-WORKDIR /root/py_api_client
-RUN python3 setup.py install
 
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
