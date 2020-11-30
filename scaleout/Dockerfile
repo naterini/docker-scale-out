@@ -1,19 +1,19 @@
 ARG DOCKER_FROM
 FROM ${DOCKER_FROM}
-#ARG YUM_PROXY
-#ENV YUM_PROXY="${YUM_PROXY}"
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib
-RUN yum -y install \
-	yum-plugin-ovl rpm gcc automake make perl-macros.x86_64 rpm-build \
+RUN dnf -y install 'dnf-command(config-manager)'
+RUN dnf -y config-manager --set-enabled PowerTools
+RUN dnf -y install \
+	rpm gcc automake make perl-macros.x86_64 rpm-build passwd \
 	readline-devel openssl-devel openssl pam-devel \
 	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb mariadb-server \
-	glib2-devel gtk2-devel libtool git vim gdb hostname netloc \
+	glib2-devel gtk2-devel libtool git vim gdb hostname \
 	perl-Switch expect lua-devel rrdtool-devel lz4-devel json-c-devel \
-	man2html libcurl-devel freeipmi-devel hdf5-devel numactl-devel \
-	rdma-core-devel gcc-c++ flex libgcrypt-devel \
+	libcurl-devel freeipmi-devel numactl-devel \
+	rdma-core-devel gcc-c++ flex libgcrypt-devel gcc-gfortran \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
-	openssh-server openssh-client pam-devel xterm gfortran \
+	openssh-server pam-devel xterm \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
