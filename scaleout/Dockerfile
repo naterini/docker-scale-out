@@ -1,19 +1,19 @@
 ARG DOCKER_FROM
 FROM ${DOCKER_FROM}
-#ARG YUM_PROXY
-#ENV YUM_PROXY="${YUM_PROXY}"
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib
-RUN yum -y install \
-	yum-plugin-ovl rpm gcc automake make perl-macros.x86_64 rpm-build \
+RUN dnf -y install 'dnf-command(config-manager)'
+RUN dnf -y config-manager --set-enabled PowerTools
+RUN dnf -y install \
+	rpm gcc automake make perl-macros.x86_64 rpm-build passwd \
 	readline-devel openssl-devel openssl pam-devel \
 	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb mariadb-server \
-	glib2-devel gtk2-devel libtool git vim gdb hostname netloc \
+	glib2-devel gtk2-devel libtool git vim gdb hostname \
 	perl-Switch expect lua-devel rrdtool-devel lz4-devel json-c-devel \
-	man2html libcurl-devel freeipmi-devel hdf5-devel numactl-devel \
-	rdma-core-devel gcc-c++ flex libgcrypt-devel \
+	libcurl-devel freeipmi-devel numactl-devel \
+	rdma-core-devel gcc-c++ flex libgcrypt-devel gcc-gfortran \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
-	openssh-server openssh-client pam-devel xterm gfortran \
+	openssh-server pam-devel xterm \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
@@ -23,7 +23,7 @@ RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/m
 WORKDIR /root/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
 RUN mkdir -p /etc/slurm /etc/pmix /var/log/mysql/
-RUN git clone --depth 1 --single-branch -b release-2.0.22-stable https://github.com/libevent/libevent.git /root/libevent/
+RUN git clone --depth 1 --single-branch -b release-2.1.12-stable https://github.com/libevent/libevent.git /root/libevent/
 RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://github.com/HDFGroup/hdf5.git /root/hdf5
 WORKDIR /root/hdf5
 RUN ./configure --prefix=/usr/local/ >/dev/null && make -j install >/dev/null
@@ -47,7 +47,7 @@ RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "scheduler daemon" -d "/etc/slurm" -g slurm -s /bin/bash -u 1001 -r slurm && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
-RUN ln -s /usr/share/mysql/english/errmsg.sys /var/log/mysql/errmsg.sys
+RUN ln -nfs /usr/share/mariadb/english/errmsg.sys /var/log/mysql/errmsg.sys
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
 RUN chown slurm:slurm -R /var/log/mysql/ /var/lib/mysql/ /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge

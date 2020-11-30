@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DISTRO="centos:7.6.1810"
+DISTRO="centos:8"
 if [ -z "$SUBNET" ]
 then
 	ES_PORTS="
