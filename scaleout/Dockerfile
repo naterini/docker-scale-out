@@ -47,7 +47,7 @@ RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "scheduler daemon" -d "/etc/slurm" -g slurm -s /bin/bash -u 1001 -r slurm && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
-RUN ln -s /usr/share/mysql/english/errmsg.sys /var/log/mysql/errmsg.sys
+RUN ln -nfs /usr/share/mariadb/english/errmsg.sys /var/log/mysql/errmsg.sys
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
 RUN chown slurm:slurm -R /var/log/mysql/ /var/lib/mysql/ /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
