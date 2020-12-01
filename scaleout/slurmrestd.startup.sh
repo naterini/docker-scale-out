@@ -12,5 +12,8 @@ unset SLURM_JWT
 
 while true
 do
-	/usr/local/sbin/slurmrestd -f /etc/slurm/slurm.jwt.conf -u slurmrestd -g slurmrestd -vvvvvv ${SUBNET}.1.6:80
+	/usr/local/sbin/slurmrestd -f /etc/slurm/slurm.jwt.conf \
+		-u slurmrestd -g slurmrestd -a rest_auth/jwt \
+		-s openapi/v0.0.36,openapi/dbv0.0.36 -vvvvvv \
+		${SUBNET}.1.6:80
 done
