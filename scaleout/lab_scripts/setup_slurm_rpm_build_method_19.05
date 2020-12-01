@@ -1,0 +1,161 @@
+#!/bin/bash
+#
+# This is the Slurm Installation script
+# Run it on mgmtnode as root
+#
+
+################################################
+# Install epel-release and other software
+################################################
+
+mkdir /etc/PDSH
+echo "node00
+node01
+node02
+node03
+node04
+node05
+node06
+node07
+node08
+node09" > /etc/PDSH/hosts
+export WCOLL=/etc/PDSH/hosts
+yum install -y epel-release 
+yum install -y pdsh bind-utils expect gcc make git gtk2-devel hdf5-devel hwloc hwloc-devel hwloc-gui libibmad libibumad libcurl libssh2-devel lua lua-devel man man2html mariadb mariadb-devel mariadb-server munge munge-devel munge-libs net-tools ncurses-devel nfs-utils numactl numactl-devel openssh-server openssl-devel pam-devel perl-ExtUtils-MakeMaker python-pip readline-devel rpm-build rrdtool-devel screen vim wget rpm-devel perl-Switch postfix mailx
+pdsh "yum install -y epel-release"
+pdsh "yum install -y pdsh bind-utils expect gcc make git gtk2-devel hdf5-devel hwloc hwloc-devel hwloc-gui libibmad libibumad libcurl libssh2-devel lua lua-devel man man2html mariadb mariadb-devel mariadb-server munge munge-devel munge-libs net-tools ncurses-devel nfs-utils numactl numactl-devel openssh-server openssl-devel pam-devel perl-ExtUtils-MakeMaker python-pip readline-devel rpm-build rrdtool-devel screen vim wget mailx"
+
+systemctl enable postfix
+systemctl start postfix
+
+################################################
+# Install munge, make key, distribute, start
+################################################
+
+systemctl enable munge
+pdsh "systemctl enable munge"
+dd if=/dev/urandom bs=1 count=1024 > /etc/munge/munge.key
+chown munge:munge /etc/munge/munge.key
+chmod 400 /etc/munge/munge.key
+pdcp /etc/munge/munge.key /etc/munge
+pdsh "chown munge:munge /etc/munge/munge.key"
+pdsh "chmod 400 /etc/munge/munge.key"
+
+systemctl start munge
+pdsh "systemctl start munge"
+
+###############################################
+# Download Slurm
+###############################################
+
+cd ~/Software
+wget https://download.schedmd.com/slurm/slurm-19.05.1-2.tar.bz2
+
+###############################################
+# RPM Build Slurm and install
+###############################################
+
+rpmbuild -ta slurm-19.05.1-2.tar.bz2
+ls -l ~/rpmbuild/RPMS/x86_64/*.rpm
+rpm -Uvh ~/rpmbuild/RPMS/x86_64/*.rpm
+pdcp ~/rpmbuild/RPMS/x86_64/slurm-slurmd-19.05.1-2.el7.x86_64.rpm /root/Software
+pdcp ~/rpmbuild/RPMS/x86_64/slurm-19.05.1-2.el7.x86_64.rpm /root/Software
+pdsh "yum install -y /root/Software/slurm-19.05.1-2.el7.x86_64.rpm"
+pdsh "yum install -y /root/Software/slurm-slurmd-19.05.1-2.el7.x86_64.rpm"
+pdsh "systemctl enable slurmd"
+
+###############################################
+# Enable and start MariaDB
+###############################################
+
+systemctl enable mariadb
+systemctl start mariadb
+mysql -u root  -Bse "grant all on slurm_acct_db.* TO 'slurm'@'localhost' identified by 'slurm' with grant option;"
+
+echo "#
+# slurmDBD info
+DbdAddr=localhost
+DbdHost=localhost
+#DbdPort=7031
+SlurmUser=slurm
+#MessageTimeout=300
+DebugLevel=4
+#DefaultQOS=normal,standby
+LogFile=/var/log/slurm/slurmdbd.log
+PidFile=/var/run/slurmdbd.pid
+#PluginDir=/usr/lib/slurm
+#PrivateData=accounts,users,usage,jobs
+#TrackWCKey=yes
+#
+# Database info
+StorageType=accounting_storage/mysql
+#StorageHost=localhost
+#StoragePort=1234
+StoragePass=slurm
+StorageUser=slurm
+#StorageLoc=slurm_acct_db
+" > /etc/slurm/slurmdbd.conf
+
+mkdir /var/log/slurm
+chown slurm:slurm /var/log/slurm
+touch /var/log/slurm/slurmdbd.log
+chown slurm:slurm /var/log/slurm/slurmdbd.log
+
+systemctl enable slurmdbd
+systemctl start slurmdbd
+
+###############################################
+# Configure and start Slurm
+###############################################
+mkdir -p /var/spool/slurmctld
+chown slurm:slurm /var/spool/slurmctld
+echo "
+SlurmctldHost=mgmtnode
+#PrologFlags=x11
+MpiDefault=none
+ProctrackType=proctrack/linuxproc
+ReturnToService=1
+SlurmctldPidFile=/var/run/slurmctld.pid
+SlurmdPidFile=/var/run/slurmd.pid
+SlurmdSpoolDir=/var/spool/slurmd
+SlurmUser=slurm
+StateSaveLocation=/var/spool/slurmctld
+SwitchType=switch/none
+TaskPlugin=task/affinity
+FastSchedule=1
+SchedulerType=sched/backfill
+SelectType=select/cons_res
+SelectTypeParameters=CR_Core
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageEnforce=assoc,limits,qos,safe
+ClusterName=cluster
+JobAcctGatherType=jobacct_gather/linux
+JobCompType=jobcomp/none
+SlurmctldLogFile=/var/log/slurmctld.log
+SlurmdLogFile=/var/log/slurmd.log
+SlurmctldDebug=debug
+PartitionName=debug Nodes=node0[0-9] Default=YES MaxTime=INFINITE State=UP
+NodeName=node0[0-9] CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=4 ThreadsPerCore=1 RealMemory=16046
+PriorityType=priority/multifactor
+" > /etc/slurm/slurm.conf
+
+systemctl start slurmctld
+systemctl status slurmctld
+systemctl enable slurmctld
+
+###############################################
+# Fetch the clean.sh script and run it 
+###############################################
+
+cd /usr/local/bin
+wget http://hoopesfamily.net/clean_RPM.sh
+chmod +x clean_RPM.sh
+mv clean_RPM.sh clean.sh
+/usr/local/bin/clean.sh
+
+###############################################
+# Add WCOLL env to bashrc 
+###############################################
+echo -e "export WCOLL=/etc/PDSH/hosts">>/etc/bashrc
+
+

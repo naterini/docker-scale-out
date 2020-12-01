@@ -151,6 +151,8 @@ RUN mkdir -p /etc/PDSH && \
 	echo -e "\nalias ..='cd ..'\n" >> /etc/bashrc && \
 	echo -e "\nalias l='ls -alF'\n" >> /etc/bashrc
 
+RUN mkdir -p -m 0777 /lab_scripts
+COPY lab_scripts/* /lab_scripts/
 COPY slurm/* /etc/slurm/
 RUN chmod 0600 /etc/slurm/slurmdbd.conf
 RUN chown slurm:slurm /etc/slurm/slurmdbd.conf

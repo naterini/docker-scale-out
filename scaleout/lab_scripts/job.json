@@ -1,0 +1,15 @@
+{
+        "job": {
+                        "account": "bedrock",
+                        "tasks": 1,
+                        "name": "test",
+                        "nodes": 1,
+                        "current_working_directory": "/tmp/",
+                        "environment": {
+                                "PATH": "/bin:/usr/bin/:/usr/local/bin/",”
+                                "LD_LIBRARY_PATH": "/lib/:/lib64/:/usr/local/lib"
+                        }
+        },
+        "script": "#!/bin/bash\nsrun hostname"
+}
+

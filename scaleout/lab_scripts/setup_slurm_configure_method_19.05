@@ -1,0 +1,149 @@
+#!/bin/bash
+#
+# This is the Slurm Installation script
+# Run it on mgmtnode as root
+#
+
+################################################
+# Install epel-release and other software
+################################################
+
+mkdir /etc/PDSH
+echo "node00
+node01
+node02
+node03
+node04
+node05
+node06
+node07
+node08
+node09" > /etc/PDSH/hosts
+export WCOLL=/etc/PDSH/hosts
+yum install -y epel-release 
+yum install -y pdsh bind-utils expect gcc make git gtk2-devel hdf5-devel hwloc hwloc-devel hwloc-gui libibmad libibumad libcurl libssh2-devel lua lua-devel man man2html mariadb mariadb-devel mariadb-server munge munge-devel munge-libs net-tools ncurses-devel nfs-utils numactl numactl-devel openssh-server openssl-devel pam-devel perl-ExtUtils-MakeMaker python-pip readline-devel rpm-build rrdtool-devel screen vim wget rpm-devel
+pdsh "yum install -y epel-release"
+pdsh "yum install -y pdsh bind-utils expect gcc make git gtk2-devel hdf5-devel hwloc hwloc-devel hwloc-gui libibmad libibumad libcurl libssh2-devel lua lua-devel man man2html mariadb mariadb-devel mariadb-server munge munge-devel munge-libs net-tools ncurses-devel nfs-utils numactl numactl-devel openssh-server openssl-devel pam-devel perl-ExtUtils-MakeMaker python-pip readline-devel rpm-build rrdtool-devel screen vim wget"
+
+################################################
+# Install munge, make key, distribute, start
+################################################
+
+systemctl enable munge
+pdsh "systemctl enable munge"
+dd if=/dev/urandom bs=1 count=1024 > /etc/munge/munge.key
+chown munge:munge /etc/munge/munge.key
+chmod 400 /etc/munge/munge.key
+pdcp /etc/munge/munge.key /etc/munge
+pdsh "chown munge:munge /etc/munge/munge.key"
+pdsh "chmod 400 /etc/munge/munge.key"
+
+systemctl start munge
+pdsh "systemctl start munge"
+
+###############################################
+# Enable and start MariaDB
+###############################################
+
+systemctl enable mariadb
+systemctl start mariadb
+
+###############################################
+# Download Slurm
+###############################################
+
+cd ~/Software
+wget https://download.schedmd.com/slurm/slurm-19.05.1-2.tar.bz2
+pdcp slurm-19.05.1-2.tar.bz2 /root/Software
+
+###############################################
+# Excract Slurm
+###############################################
+
+tar jxvf slurm-19.05.1-2.tar.bz2
+pdsh "tar jxvf ~/Software/slurm-19.05.1-2.tar.bz2 -C ~/Software"
+
+###############################################
+# Configure and install Slurm
+###############################################
+
+cd ~/Software/slurm-19.05.1-2
+./configure 
+make && make install
+pdsh "cd ~/Software/slurm-19.05.1-2 ; ./configure"
+pdsh "cd ~/Software/slurm-19.05.1-2 ; make && make install"
+cp ~/Software/slurm-19.05.1-2/etc/slurmctld.service /usr/lib/systemd/system
+cp ~/Software/slurm-19.05.1-2/etc/slurmdbd.service /usr/lib/systemd/system
+
+mkdir -p /var/log/slurm
+touch /var/log/slurm/slurmdbd.log
+chown slurm:slurm /var/log/slurm/slurmdbd.log
+mkdir -p /var/spool/slurmctld
+chown slurm:slurm /var/spool/slurmctld
+
+systemctl enable slurmctld
+systemctl enable slurmdbd
+
+cd /usr/local/etc/
+wget --user=guest ==password=slurm http://hoopesfamily.net/slurmdbd.conf
+wget --user=guest ==password=slurm http://hoopesfamily.net/slurm.conf
+
+pdcp /usr/local/etc/slurm.conf /usr/local/etc
+pdcp ~/Software/slurm-19.05.1-2/etc/slurmd.service /usr/lib/systemd/system
+
+###############################################
+# Enable and start MariaDB
+###############################################
+
+systemctl enable mariadb
+systemctl start mariadb
+mysql -u root  -Bse "grant all on slurm_acct_db.* TO 'slurm'@'localhost' identified by 'slurm' with grant option;"
+
+echo "#
+# slurmDBD info
+DbdAddr=localhost
+DbdHost=localhost
+#DbdPort=7031
+SlurmUser=slurm
+#MessageTimeout=300
+DebugLevel=4
+#DefaultQOS=normal,standby
+LogFile=/var/log/slurm/slurmdbd.log
+PidFile=/var/run/slurmdbd.pid
+#PluginDir=/usr/lib/slurm
+#PrivateData=accounts,users,usage,jobs
+#TrackWCKey=yes
+#
+# Database info
+StorageType=accounting_storage/mysql
+#StorageHost=localhost
+#StoragePort=1234
+StoragePass=slurm
+StorageUser=slurm
+#StorageLoc=slurm_acct_db
+" > /usr/local/etc/slurmdbd.conf
+
+systemctl start slurmdbd
+systemctl start slurmctld
+
+pdsh "systemctl enable slurmd"
+pdsh "systemctl start slurmd"
+
+###############################################
+# Fetch the clean.sh script and run it 
+###############################################
+
+cd /usr/local/bin
+wget  http://hoopesfamily.net/clean_CONFIGURE.sh
+chmod +x clean_CONFIGURE.sh
+mv clean_CONFIGURE clean.sh
+/usr/local/bin/clean.sh
+
+###############################################
+# Add WCOLL env to bashrc 
+###############################################
+echo -e "export WCOLL=/etc/PDSH/hosts">>/etc/bashrc
+
+
+
+
