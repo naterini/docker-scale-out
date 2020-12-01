@@ -186,4 +186,5 @@ RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_li
 RUN ldconfig
 RUN mandb
 RUN updatedb
+RUN rm -f /run/nologin
 WORKDIR /root/
