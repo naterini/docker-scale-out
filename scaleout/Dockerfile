@@ -13,7 +13,7 @@ RUN dnf -y install \
 	libcurl-devel freeipmi-devel numactl-devel lynx \
 	rdma-core-devel gcc-c++ flex libgcrypt-devel gcc-gfortran \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
-	openssh-server pam-devel xterm oniguruma-devel \
+	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
@@ -22,6 +22,9 @@ RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir
 RUN git clone --depth 1 --single-branch -b jq-1.6 https://github.com/stedolan/jq.git /root/jq/
 WORKDIR /root/jq
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ --disable-maintainer-mode && make -j && make install
+RUN git clone --depth 1 --single-branch -b 1.0.15 https://github.com/ttscoff/mdless.git /root/mdless/
+WORKDIR /root/mdless
+RUN gem install mdless
 RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/munge.git /root/munge/
 WORKDIR /root/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
