@@ -40,7 +40,10 @@ Rest API Nodes:
   * rest
 
 ## Multiple Instances
-Each cluster must have a unique class B subnet. The default SUBNET="10.11".
+Each cluster must have a unique class B subnet.
+
+Default IPv4 is SUBNET="10.11".
+Default IPv6 is SUBNET6="2001:db8:1:1::".
 
 ## To build and run:
 
@@ -84,6 +87,9 @@ make HOST=node1 bash
 ssh-keygen -f "/home/$(whoami)/.ssh/known_hosts" -R "10.11.1.5" 2>/dev/null
 ssh -o StrictHostKeyChecking=no -l fred 10.11.1.5 -X #use 'password'
 ```
+## IPv6 configuration
+
+# IPv6 must be configured in docker: https://docs.docker.com/config/daemon/ipv6/
 
 ## Changes needed for sysctl.conf to make it run:
 ```

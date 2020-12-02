@@ -154,6 +154,8 @@ RUN mkdir -p /etc/PDSH && \
 	echo -e "\nalias ..='cd ..'\n" >> /etc/bashrc && \
 	echo -e "\nalias l='ls -alF'\n" >> /etc/bashrc
 
+RUN mandb
+
 RUN mkdir -p -m 0777 /lab_scripts
 COPY lab_scripts/* /lab_scripts/
 COPY slurm/* /etc/slurm/
@@ -184,7 +186,6 @@ RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
 #RUN echo "define(`SMART_HOST', `login')dnl" >> /etc/mail/sendmail.mc
 RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf
 RUN ldconfig
-RUN mandb
 RUN updatedb
 RUN rm -f /run/nologin
 WORKDIR /root/
