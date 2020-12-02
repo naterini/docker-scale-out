@@ -22,32 +22,43 @@ else
 fi
 
 SUBNET=${SUBNET:-"10.11"}
-
-#IPLIST="$(seq -f " ${SUBNET}.5.%0.0f" 1 250) $(seq -f " ${SUBNET}.6.%0.0f" 1 250)"
-IPLIST="$(seq -f " ${SUBNET}.5.%0.0f" 1 10)"
+SUBNET6=${SUBNET6:-"2001:db8:1:1::"}
+#generate list of 10 nodes
+NODELIST=$(seq 1 10 | while read i
+do
+	echo "$(printf "node%02d" $i) ${SUBNET}.5.${i} ${SUBNET6}5:${i}"
+done)
 
 printip() {
-	for ip in $IPLIST
+	echo "$NODELIST" | while read name ip4 ip6
 	do
-		name=$(printf "node%02d" $i)
-		i=$(($i + 1))
-
-		echo "      - \"$name:$ip\""
+		echo "      - \"$name:$ip4\""
+		echo "      - \"$name:$ip6\""
 	done
 }
 
 HOSTLIST="    extra_hosts:
       - \"db:${SUBNET}.1.3\"
+      - \"db:${SUBNET6}1:3\"
       - \"slurmdbd:${SUBNET}.1.2\"
+      - \"slurmdbd:${SUBNET6}1:2\"
       - \"mgmtnode:${SUBNET}.1.1\"
+      - \"mgmtnode:${SUBNET6}1:1\"
       - \"mgmtnode2:${SUBNET}.1.4\"
+      - \"mgmtnode2:${SUBNET6}1:4\"
       - \"login:${SUBNET}.1.5\"
+      - \"login:${SUBNET6}1:5\"
       - \"rest:${SUBNET}.1.6\"
+      - \"rest:${SUBNET6}1:6\"
       - \"proxy:${SUBNET}.1.7\"
       - \"es01:${SUBNET}.1.15\"
+      - \"es01:${SUBNET6}1:15\"
       - \"es02:${SUBNET}.1.16\"
+      - \"es02:${SUBNET6}1:16\"
       - \"es03:${SUBNET}.1.17\"
+      - \"es03:${SUBNET6}1:17\"
       - \"kibana:${SUBNET}.1.18\"
+      - \"kibana:${SUBNET6}1:18\"
 $(printip)"
 
 LOGGING="
@@ -72,9 +83,11 @@ networks:
     driver_opts:
         com.docker.network.bridge.enable_ip_masquerade: 'true'
     internal: false
+    enable_ipv6: true
     ipam:
       config:
-        - subnet: ${SUBNET}.0.0/16
+        - subnet: "${SUBNET}.0.0/16"
+        - subnet: "${SUBNET6}/64"
 volumes:
   root-home:
   home:
@@ -91,11 +104,13 @@ services:
       context: ./scaleout
       args:
         DOCKER_FROM: $DISTRO
-        SUBNET: $SUBNET
+        SUBNET: "$SUBNET"
+        SUBNET6: "$SUBNET6"
       network: host
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
@@ -105,17 +120,20 @@ services:
 $LOGGING
     networks:
       internal:
-        ipv4_address: ${SUBNET}.1.3
+        ipv4_address: "${SUBNET}.1.3"
+        ipv6_address: "${SUBNET6}1:3"
 $HOSTLIST
   slurmdbd:
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET}"
     command: ["bash", "-c", "slurmdbd.startup.sh"]
     hostname: slurmdbd
     networks:
       internal:
-        ipv4_address: ${SUBNET}.1.2
+        ipv4_address: "${SUBNET}.1.2"
+        ipv6_address: "${SUBNET6}1:2"
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
@@ -128,12 +146,14 @@ $HOSTLIST
   mgmtnode:
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     command: ["bash", "-xv", "/usr/local/bin/slurmctld.startup.sh"]
     hostname: mgmtnode
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.1
+        ipv6_address: ${SUBNET6}1:1
     volumes:
       - root-home:/root
       - home:/home/
@@ -149,12 +169,14 @@ $HOSTLIST
   mgmtnode2:
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     command: ["bash", "-xv", "/usr/local/bin/slurmctld.startup.sh"]
     hostname: mgmtnode2
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.4
+        ipv6_address: ${SUBNET6}1:4
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
@@ -170,12 +192,14 @@ $HOSTLIST
   login:
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     command: ["bash", "-xv", "/usr/local/bin/login.startup.sh"]
     hostname: login
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.5
+        ipv6_address: ${SUBNET6}1:5
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
@@ -189,22 +213,23 @@ EOF
 
 lastname="mgmtnode"
 oi=0
-for ip in $IPLIST
+echo "$NODELIST" | while read name ip4 ip6
 do
 	oi=$(($oi + 1))
 	[ $oi -gt 10 -a ! -z "$name" ] && oi=0 && lastname="$name"
-	name=$(printf "node%02d" $i)
 	i=$(($i + 1))
 cat <<EOF
   $name:
     image: scaleout:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     command: ["bash", "/usr/local/bin/slurmd.startup.sh"]
     hostname: $name
     networks:
       internal:
-        ipv4_address: $ip
+        ipv4_address: $ip4
+        ipv6_address: $ip6
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
@@ -230,7 +255,8 @@ cat <<EOF
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     ulimits:
       memlock:
         soft: -1
@@ -241,6 +267,7 @@ cat <<EOF
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.15
+        ipv6_address: ${SUBNET6}1:15
 ${ES_PORTS}
 $LOGGING
   es02:
@@ -252,7 +279,8 @@ $LOGGING
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     ulimits:
       memlock:
         soft: -1
@@ -263,6 +291,7 @@ $LOGGING
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.16
+        ipv6_address: ${SUBNET6}1:16
 $LOGGING
   es03:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
@@ -273,7 +302,8 @@ $LOGGING
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     ulimits:
       memlock:
         soft: -1
@@ -284,6 +314,7 @@ $LOGGING
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.17
+        ipv6_address: ${SUBNET6}1:17
 $LOGGING
   kibana:
     image: docker.elastic.co/kibana/kibana-oss:7.6.1
@@ -292,10 +323,12 @@ $LOGGING
     environment:
       - SERVER_NAME=scaleout
       - ELASTICSEARCH_HOSTS=http://es01:9200
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.18
+        ipv6_address: ${SUBNET6}1:18
 ${KIBANA_PORTS}
     depends_on:
       - "es01"
@@ -309,6 +342,7 @@ $LOGGING
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.6
+        ipv6_address: ${SUBNET6}1:6
     volumes:
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
@@ -322,12 +356,14 @@ $HOSTLIST
       network: host
     image: proxy:latest
     environment:
-      - SUBNET=${SUBNET}
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
     hostname: proxy
     command: ["bash", "-c", "nginx & php-fpm7 -F"]
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.7
+        ipv6_address: ${SUBNET6}1:7
     volumes:
       - auth:/auth/
       - /dev/log:/dev/log
