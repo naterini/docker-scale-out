@@ -20,8 +20,7 @@ do
 	sacctmgr -vi add user $i Account=bedrock DefaultAccount=bedrock
 done
 
-grep node00 /etc/slurm/slurm.conf 2>&1 >/dev/null
-if [ $? -ne 0 -a "$(hostname -s)" = "mgmtnode" ]
+if [ "$(hostname -s)" = "mgmtnode" ]
 then
 	props="$(slurmd -C | head -1 | sed 's#NodeName=mgmtnode ##g')"
 	for ((i=0;i<10;i++))
@@ -30,20 +29,29 @@ then
 		echo "NodeName=$name $props" >> /etc/slurm/slurm.conf
 	done
 
+	/usr/local/sbin/slurmctld -D &
+	PID=$!
+
 	scontrol token username=slurm lifespan=9999999 | sed 's#SLURM_JWT=##g' > /auth/slurm
 	chmod 0755 /auth/slurm
-else
+
+	wait $PID
+
 	while true
 	do
-		#wait until config is filled out by primary before starting
-		grep node00 /etc/slurm/slurm.conf 2>&1 >/dev/null
-		[ $? -eq 0 ] && sleep 1 && break
-		sleep 0.25
+		/usr/local/sbin/slurmctld -D
 	done
 fi
 
 while true
 do
-	/usr/local/sbin/slurmctld -D
+	#wait until config is filled out by primary before starting
+	grep node00 /etc/slurm/slurm.conf 2>&1 >/dev/null
+	[ $? -eq 0 ] && sleep 1 && break
+	sleep 0.25
 done
 
+while true
+do
+	/usr/local/sbin/slurmctld -D
+done
