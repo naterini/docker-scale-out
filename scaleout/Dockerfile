@@ -3,6 +3,7 @@ FROM ${DOCKER_FROM}
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib
 RUN dnf -y install 'dnf-command(config-manager)'
+RUN dnf -y install dnf-plugins-core
 RUN dnf -y config-manager --set-enabled PowerTools
 RUN dnf -y install \
 	rpm gcc automake make perl-macros.x86_64 rpm-build passwd \
