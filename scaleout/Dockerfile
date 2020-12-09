@@ -17,6 +17,9 @@ RUN dnf -y install \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
+RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
+WORKDIR /root/ucx
+RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
 WORKDIR /root/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
@@ -47,6 +50,7 @@ WORKDIR /root/slurm
 RUN git config --global user.email "you@example.com"
 RUN git config --global user.name "scale out"
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
+	--with-ucx=/usr/local \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
 	make -j >/dev/null && make install >/dev/null && make -j install-contrib >/dev/null
 RUN cd contribs && make install
@@ -76,7 +80,8 @@ RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.t
 RUN tar -xzf /root/openmpi.tar.gz
 WORKDIR /root/openmpi-4.0.1/
 RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/usr/local/lib --with-pmi=/usr/local --with-slurm --with-devel-headers --enable-debug --without-cma \
-	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/
+	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/ \
+	--with-ucx=/usr/local --enable-mca-no-build=btl-uct
 RUN	make -j >/dev/null && make install >/dev/null
 WORKDIR /root
 RUN git clone --depth 1 --branch msmtp-1.8.6 https://github.com/marlam/msmtp-mirror.git msmtp
