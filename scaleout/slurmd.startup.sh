@@ -12,5 +12,5 @@ done
 
 while true
 do
-	/usr/local/sbin/slurmd -D
+	/usr/local/sbin/slurmd -D -N $(hostname -s)
 done
