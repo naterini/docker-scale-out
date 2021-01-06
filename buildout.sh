@@ -24,7 +24,7 @@ fi
 SUBNET=${SUBNET:-"10.11"}
 SUBNET6=${SUBNET6:-"2001:db8:1:1::"}
 #generate list of 10 nodes
-NODELIST=$(seq 1 10 | while read i
+NODELIST=$(seq 0 9 | while read i
 do
 	echo "$(printf "node%02d" $i) ${SUBNET}.5.${i} ${SUBNET6}5:${i}"
 done)
