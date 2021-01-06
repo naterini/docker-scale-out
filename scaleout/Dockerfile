@@ -11,7 +11,7 @@ RUN dnf -y install \
 	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb mariadb-server \
 	glib2-devel gtk2-devel libtool git vim gdb hostname \
 	perl-Switch expect lua-devel rrdtool-devel lz4-devel json-c-devel \
-	libcurl-devel freeipmi-devel numactl-devel lynx \
+	libcurl-devel freeipmi-devel numactl-devel lynx numactl \
 	rdma-core-devel gcc-c++ flex libgcrypt-devel gcc-gfortran \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
