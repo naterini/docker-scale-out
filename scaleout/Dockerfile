@@ -16,7 +16,8 @@ RUN dnf -y install \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
-	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
+	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
+	systemd
 RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
 WORKDIR /root/ucx
 RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
@@ -50,7 +51,7 @@ WORKDIR /root/slurm
 RUN git config --global user.email "you@example.com"
 RUN git config --global user.name "scale out"
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
-	--with-ucx=/usr/local \
+	--with-ucx=/usr/local --sharedstatedir=/var/run/ \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
 	make -j >/dev/null && make install >/dev/null && make -j install-contrib >/dev/null
 RUN cd contribs && make install
@@ -63,7 +64,8 @@ RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
 RUN chown slurm:slurm -R /var/log/mysql/ /var/lib/mysql/ /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
-RUN mkdir -m 0700 -p /etc/munge/
+RUN mkdir -m 0700 -p /etc/munge/ && \
+	mkdir -p -m 0700 /var/log/munge && chown munge:munge -R /var/log/munge
 RUN dd if=/dev/urandom bs=32 count=1 >/etc/slurm/jwt.key
 RUN chown slurm:slurm /etc/slurm/jwt.key
 RUN chmod 0600 /etc/slurm/jwt.key
@@ -71,7 +73,7 @@ RUN dd if=/dev/urandom bs=1 count=1024 >/etc/munge/munge.key
 RUN touch /etc/munge/munge.seed
 RUN chown munge:munge -R /etc/munge
 RUN chmod 0400 /etc/munge/munge.key /etc/munge/munge.seed
-RUN chown root:root /etc/munge/ -R
+RUN chown root:root /etc/munge/ -R && chown -R munge:munge /etc/munge
 RUN git clone --depth 1 --single-branch -b pdsh-2.33 https://github.com/chaos/pdsh.git /root/pdsh/
 WORKDIR /root/pdsh
 RUN autoreconf -i && ./configure --without-rsh --with-ssh --prefix=/usr/local --sysconfdir=/etc/ --with-readline && make -j >/dev/null && make install >/dev/null
@@ -174,15 +176,19 @@ COPY mysql.init /etc/
 RUN chmod 0755 /etc/mysql.init
 COPY mysql /usr/local/bin/mysql
 COPY slurmctld.startup.sh /usr/local/bin/slurmctld.startup.sh
+COPY slurmctld.startup2.sh /usr/local/bin/slurmctld.startup2.sh
 COPY slurmd.startup.sh /usr/local/bin/slurmd.startup.sh
-COPY slurmdbd.startup.sh /usr/local/bin/slurmdbd.startup.sh
 COPY login.startup.sh /usr/local/bin/login.startup.sh
 COPY slurmrestd.startup.sh /usr/local/bin/slurmrestd.startup.sh
+COPY slurmrestd.env /etc/sysconfig/slurmrestd
+RUN sed -e "s/{SUBNET}/${SUBNET}/" -i /etc/sysconfig/slurmrestd
+RUN chmod 0755 /usr/local/bin/*.sh
 COPY globals.scaleout-slurmctld /root/slurm/testunit/expect/
+
+RUN cp /root/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
 
 RUN chmod 0755 /usr/local/bin/mysql
 RUN chmod 0755 /usr/local/bin/slurmctld.startup.sh
-RUN chmod 0755 /usr/local/bin/slurmdbd.startup.sh
 RUN chmod 0755 /usr/local/bin/slurmd.startup.sh
 RUN chmod 0755 /usr/local/bin/login.startup.sh
 RUN chmod 0755 /usr/local/bin/slurmrestd.startup.sh
@@ -195,3 +201,17 @@ RUN ldconfig
 RUN updatedb
 RUN rm -f /run/nologin
 WORKDIR /root/
+
+RUN mkdir -p /etc/systemd/system/{postfix,slurmctld,slurmdbd,slurmd,slurmrestd}.service.d
+COPY slurmdbd.service /etc/systemd/system/slurmdbd.service.d/local.conf
+COPY slurmctld.service /etc/systemd/system/slurmctld.service.d/local.conf
+COPY slurmd.service /etc/systemd/system/slurmd.service.d/local.conf
+COPY slurmrestd.service /etc/systemd/system/slurmrestd.service.d/local.conf
+COPY postfix.service /etc/systemd/system/postfix.service.d/local.conf
+RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix
+RUN systemctl disable dnf-makecache.timer
+
+RUN systemctl enable munge
+STOPSIGNAL SIGRTMIN+3
+VOLUME ["/tmp", "/run", "/run/lock"]
+CMD [ "/sbin/init" ]

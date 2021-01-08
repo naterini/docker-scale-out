@@ -128,7 +128,6 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET}"
-    command: ["bash", "-c", "slurmdbd.startup.sh"]
     hostname: slurmdbd
     networks:
       internal:
@@ -139,6 +138,11 @@ $HOSTLIST
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
     depends_on:
       - "db"
@@ -148,7 +152,6 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
-    command: ["bash", "-xv", "/usr/local/bin/slurmctld.startup.sh"]
     hostname: mgmtnode
     networks:
       internal:
@@ -162,6 +165,11 @@ $HOSTLIST
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
       - auth:/auth/
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -171,7 +179,6 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
-    command: ["bash", "-xv", "/usr/local/bin/slurmctld.startup.sh"]
     hostname: mgmtnode2
     networks:
       internal:
@@ -184,6 +191,11 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -194,7 +206,6 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
-    command: ["bash", "-xv", "/usr/local/bin/login.startup.sh"]
     hostname: login
     networks:
       internal:
@@ -207,6 +218,11 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
 $HOSTLIST
 EOF
@@ -224,7 +240,6 @@ cat <<EOF
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
-    command: ["bash", "/usr/local/bin/slurmd.startup.sh"]
     hostname: $name
     networks:
       internal:
@@ -233,10 +248,14 @@ cat <<EOF
     volumes:
       - root-home:/root
       - etc-slurm:/etc/slurm
-      - /sys/fs/cgroup:/sys/fs/cgroup
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
     depends_on:
       - "$lastname"
@@ -338,7 +357,6 @@ $LOGGING
   rest:
     hostname: rest
     image: scaleout:latest
-    command: ["bash", "-xv", "/usr/local/bin/slurmrestd.startup.sh"]
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.6
@@ -346,6 +364,11 @@ $LOGGING
     volumes:
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 $LOGGING
     depends_on:
       - "mgmtnode"
