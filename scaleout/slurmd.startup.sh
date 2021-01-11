@@ -6,3 +6,5 @@ do
 	[ $? -eq 0 ] && sleep 1 && break
 	sleep 0.25
 done
+
+exit 0

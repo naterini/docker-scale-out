@@ -35,3 +35,5 @@ else
 		sleep 0.25
 	done
 fi
+
+exit 0

@@ -8,3 +8,5 @@ do
 done
 
 scontrol token username=slurm lifespan=9999999 | sed 's#SLURM_JWT=##g' > /auth/slurm
+
+exit 0
