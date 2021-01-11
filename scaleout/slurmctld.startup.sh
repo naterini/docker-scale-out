@@ -1,4 +1,8 @@
 #!/bin/bash
+#only configure once
+[ -f /var/run/slurmctld.startup ] && exit 0
+touch /var/run/slurmctld.startup
+
 for ((i=1;i<=100;i++))
 do
 	sacctmgr show cluster &>/dev/null
