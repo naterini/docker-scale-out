@@ -66,10 +66,24 @@ LOGGING="
       driver: syslog
     cap_add:
       - SYS_PTRACE
+      - SYS_ADMIN
+      - MKNOD
       - SYS_NICE
+      - SYS_RESOURCE
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined
+"
+SYSDFSMOUNTS="
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /etc/localtime:/etc/localtime:ro
+      - /sys/:/sys/:ro
+      - /sys/firmware
+      - /sys/kernel
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
 "
 # disable Linux specific options
 [ $MAC ] && LOGGING=
@@ -138,11 +152,7 @@ $HOSTLIST
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
 $LOGGING
     depends_on:
       - "db"
@@ -165,11 +175,7 @@ $HOSTLIST
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
       - auth:/auth/
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -191,11 +197,7 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -218,11 +220,7 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
 $LOGGING
 $HOSTLIST
 EOF
@@ -251,11 +249,11 @@ cat <<EOF
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
+    ulimits:
+      nproc: 65535
+      nofile: 131072
+      memlock: -1
 $LOGGING
     depends_on:
       - "$lastname"
@@ -364,11 +362,7 @@ $LOGGING
     volumes:
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$SYSDFSMOUNTS
 $LOGGING
     depends_on:
       - "mgmtnode"
