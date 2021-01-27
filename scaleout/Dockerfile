@@ -210,6 +210,7 @@ COPY slurmrestd.service /etc/systemd/system/slurmrestd.service.d/local.conf
 COPY postfix.service /etc/systemd/system/postfix.service.d/local.conf
 RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix
 RUN systemctl disable dnf-makecache.timer
+RUN systemctl mask systemd-udevd.service
 
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
