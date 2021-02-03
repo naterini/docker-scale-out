@@ -257,9 +257,15 @@ cat <<EOF
       - mail:/var/spool/mail/
 $SYSDFSMOUNTS
     ulimits:
-      nproc: 65535
-      nofile: 131072
-      memlock: -1
+      nproc:
+        soft: 65535
+        hard: 65535
+      nofile:
+        soft: 131072
+        hard: 131072
+      memlock:
+        soft: -1
+        hard: -1
 $LOGGING
     depends_on:
       - "$lastname"
