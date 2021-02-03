@@ -84,6 +84,8 @@ SYSDFSMOUNTS="
       - /sys/kernel
       - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
       - /sys/fs/cgroup/systemd
+      - /sys/fs/fuse/:/sys/fs/fuse/
+      - /var/lib/journal
 "
 # disable Linux specific options
 [ $MAC ] && LOGGING=
