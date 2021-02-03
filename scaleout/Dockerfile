@@ -65,7 +65,7 @@ RUN chown slurm:slurm -R /var/log/mysql/ /var/lib/mysql/ /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
 RUN mkdir -m 0700 -p /etc/munge/ && \
-	mkdir -p -m 0700 /var/log/munge && chown munge:munge -R /var/log/munge
+	mkdir -p -m 0700 /var/log/munge && chown munge:munge -R /var/log/munge /var/run/munge/
 RUN dd if=/dev/urandom bs=32 count=1 >/etc/slurm/jwt.key
 RUN chown slurm:slurm /etc/slurm/jwt.key
 RUN chmod 0600 /etc/slurm/jwt.key
