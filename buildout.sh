@@ -164,6 +164,7 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
+      - container=docker
     hostname: mgmtnode
     networks:
       internal:
@@ -187,6 +188,7 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
+      - container=docker
     hostname: mgmtnode2
     networks:
       internal:
@@ -210,6 +212,7 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
+      - container=docker
     hostname: login
     networks:
       internal:
@@ -240,6 +243,7 @@ cat <<EOF
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
+      - container=docker
     hostname: $name
     networks:
       internal:
@@ -377,6 +381,7 @@ $HOSTLIST
     environment:
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
+      - container=docker
     hostname: proxy
     command: ["bash", "-c", "nginx & php-fpm7 -F"]
     networks:
