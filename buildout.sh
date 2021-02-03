@@ -63,7 +63,7 @@ $(printip)"
 
 LOGGING="
     logging:
-      driver: syslog
+      driver: journald
     cap_add:
       - SYS_PTRACE
       - SYS_ADMIN
