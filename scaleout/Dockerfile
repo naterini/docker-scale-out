@@ -215,4 +215,4 @@ RUN systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.ti
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
 VOLUME ["/tmp", "/run", "/run/lock"]
-CMD [ "/sbin/init" ]
+CMD [ "/lib/systemd/systemd", "--system", "--log-level=info", "--crash-reboot", "--log-target=journal-or-kmsg" ]
