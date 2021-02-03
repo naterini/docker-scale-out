@@ -111,6 +111,9 @@ net.ipv4.neigh.default.gc_thresh1 = 1024
 # Increase map count for elasticsearch
 vm.max_map_count=262144
 
+# Avoid running out of file descriptors
+fs.file-max=10000000
+fs.inotify.max_user_instances=65535
 ```
 
 ## Caveats
