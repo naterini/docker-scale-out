@@ -235,7 +235,6 @@ oi=0
 echo "$NODELIST" | while read name ip4 ip6
 do
 	oi=$(($oi + 1))
-	[ $oi -gt 10 -a ! -z "$name" ] && oi=0 && lastname="$name"
 	i=$(($i + 1))
 cat <<EOF
   $name:
@@ -272,6 +271,7 @@ $LOGGING
 $HOSTLIST
 EOF
 
+	[ $oi -gt 10 -a ! -z "$name" ] && oi=0 && lastname="$name"
 done
 
 cat <<EOF
