@@ -16,7 +16,8 @@ RUN dnf -y install \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
-	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk
+	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
+	net-tools
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
 WORKDIR /root/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
