@@ -109,7 +109,6 @@ vm.max_map_count=262144
 
 ## Caveats
 
-All connections must be IPv4.
 The number of CPU threads on the host are multiplied by the number of nodes. Do not attempt to use computationally intensive applications.
 
 ## Docker work-arounds:
