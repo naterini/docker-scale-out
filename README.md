@@ -29,6 +29,11 @@ Kibana:
 Elasticsearch:
   * View http://localhost:9200/
 
+Grafana:
+  * View http://localhost:3000/
+  * User: admin
+  * Password: admin
+
 Proxy:
   * Auth REST API http://localhost:8080/auth
   * Query REST API http://localhost:8080/slurm/

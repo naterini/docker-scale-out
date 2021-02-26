@@ -15,10 +15,15 @@ then
     ports:
       - 8080:8080
 "
+	GRAFANA_PORTS="
+    ports:
+      - 3000:3000
+"
 else
 	ES_PORTS=
 	KIBANA_PORTS=
 	PROXY_PORTS=
+	GRAFANA_PORTS=
 fi
 
 SUBNET=${SUBNET:-"10.11"}
@@ -59,6 +64,10 @@ HOSTLIST="    extra_hosts:
       - \"es03:${SUBNET6}1:17\"
       - \"kibana:${SUBNET}.1.18\"
       - \"kibana:${SUBNET6}1:18\"
+      - \"influxdb:${SUBNET}.1.19\"
+      - \"influxdb:${SUBNET6}1:19\"
+      - \"grafana:${SUBNET}.1.20\"
+      - \"grafana:${SUBNET6}1:20\"
 $(printip)"
 
 LOGGING="
@@ -275,6 +284,55 @@ EOF
 done
 
 cat <<EOF
+  influxdb:
+    build:
+      context: ./influxdb
+      network: host
+    image: influxdb
+    command: ["bash", "-c", "/setup.sh & source /entrypoint.sh"]
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password
+      - DOCKER_INFLUXDB_INIT_ORG=scaleout
+      - DOCKER_INFLUXDB_INIT_BUCKET=scaleout
+      - DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=token
+      - DOCKER_INFLUXDB_INIT_USER_ID=
+      - INFLUXDB_DATA_QUERY_LOG_ENABLED=true
+      - INFLUXDB_REPORTING_DISABLED=false
+      - INFLUXDB_HTTP_LOG_ENABLED=true
+      - INFLUXDB_CONTINUOUS_QUERIES_LOG_ENABLED=true
+      - LOG_LEVEL=debug
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /dev/log:/dev/log
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.19
+        ipv6_address: ${SUBNET6}1:19
+$LOGGING
+  grafana:
+    image: grafana
+    build:
+      context: ./grafana
+      network: host
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+    volumes:
+      - /dev/log:/dev/log
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.20
+        ipv6_address: ${SUBNET6}1:20
+$GRAFANA_PORTS
+$LOGGING
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
     environment:
