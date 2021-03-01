@@ -334,7 +334,7 @@ $LOGGING
 $GRAFANA_PORTS
 $LOGGING
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.1
     environment:
       - node.name=es01
       - cluster.name=scaleout
@@ -358,7 +358,7 @@ $LOGGING
 ${ES_PORTS}
 $LOGGING
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.1
     environment:
       - node.name=es02
       - cluster.name=scaleout
@@ -381,7 +381,7 @@ $LOGGING
         ipv6_address: ${SUBNET6}1:16
 $LOGGING
   es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.1
     environment:
       - node.name=es03
       - cluster.name=scaleout
@@ -404,7 +404,7 @@ $LOGGING
         ipv6_address: ${SUBNET6}1:17
 $LOGGING
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.6.1
+    image: docker.elastic.co/kibana/kibana-oss:7.10.1
     volumes:
       - /dev/log:/dev/log
     environment:
