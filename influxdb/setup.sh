@@ -21,7 +21,11 @@ do
 	influx bucket list 2>/dev/null >/tmp/buckets
 	B=$(awk '
 	BEGIN { rc = 1 }
-	/scaleout/ {if (length($1) > 5) {print $1; rc = 0}}
+	/scaleout/ {
+		if (length($1) > 5 && $1 !~ /Error/) {
+			print $1; rc = 0
+		}
+	}
 	END {exit rc}
 	' </tmp/buckets)
 	[ $? -eq 0 ] && echo "$B" && break
