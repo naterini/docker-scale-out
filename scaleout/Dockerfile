@@ -2,6 +2,9 @@ ARG DOCKER_FROM
 FROM ${DOCKER_FROM}
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib
+# ood (open-ondemand user) is hardcoded to user 1000. must ensure uid is not different
+RUN groupadd -g 1000 ood && \
+	useradd --no-create-home --gid ood -u 1000 ood
 RUN dnf -y install 'dnf-command(config-manager)'
 RUN dnf -y install dnf-plugins-core
 RUN dnf config-manager --set-enabled powertools
@@ -114,8 +117,15 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa && \
 	cat /root/.ssh/id_ecdsa.pub >> /root/.ssh/authorized_keys && \
 	chmod -R 0700 /root/.ssh
 
-RUN groupadd bedrock && \
-	groupadd managers
+RUN echo -n "ood" | passwd --stdin ood && \
+	mkdir -p /home/ood/.ssh && \
+	ssh-keygen -f /home/ood/.ssh/id_ecdsa -N '' -t ecdsa && \
+	ssh-keygen -y -f /home/ood/.ssh/id_ecdsa > /home/ood/.ssh/id_ecdsa.pub && \
+	cat /home/ood/.ssh/id_ecdsa.pub >> /home/ood/.ssh/authorized_keys && \
+	chown -R ood:ood /home/ood/.ssh && chmod -R 0700 /home/ood/.ssh
+
+RUN groupadd -g 1005 bedrock && \
+	groupadd -g 1006 managers
 RUN for i in arnold bambam barney betty chip dino edna fred gazoo pebbles wilma; do \
 	/usr/sbin/useradd -c $i -m -g users -G bedrock $i && \
 	echo 'password' | passwd $i --stdin && \

@@ -15,6 +15,10 @@ then
     ports:
       - 8080:8080
 "
+	ONDEMAND_PORTS="
+    ports:
+      - 8081:80
+"
 else
 	ES_PORTS=
 	KIBANA_PORTS=
@@ -48,6 +52,7 @@ HOSTLIST="    extra_hosts:
       - \"es02:${SUBNET}.1.16\"
       - \"es03:${SUBNET}.1.17\"
       - \"kibana:${SUBNET}.1.18\"
+      - \"open-ondemand:${SUBNET}.1.21\"
 $(printip)"
 
 LOGGING="
@@ -78,6 +83,7 @@ networks:
 volumes:
   root-home:
   home:
+  etc-ssh:
   etc-slurm:
   slurmctld:
   elastic_data01:
@@ -138,6 +144,7 @@ $HOSTLIST
       - root-home:/root
       - home:/home/
       - slurmctld:/var/spool/slurm
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
@@ -157,6 +164,7 @@ $HOSTLIST
         ipv4_address: ${SUBNET}.1.4
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - home:/home/
       - slurmctld:/var/spool/slurm
@@ -178,6 +186,7 @@ $HOSTLIST
         ipv4_address: ${SUBNET}.1.5
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - home:/home/
       - slurmctld:/var/spool/slurm
@@ -207,6 +216,7 @@ cat <<EOF
         ipv4_address: $ip
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - /sys/fs/cgroup:/sys/fs/cgroup
       - home:/home/
@@ -221,6 +231,26 @@ EOF
 done
 
 cat <<EOF
+  open-ondemand:
+    build:
+      context: ./open-ondemand
+      network: host
+    image: open-ondemand
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - DEFAULT_SSHHOST=login
+    volumes:
+      - /dev/log:/dev/log
+      - etc-ssh:/etc/shared-ssh
+      - home:/home/
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.21
+    depends_on:
+      - "login"
+$ONDEMAND_PORTS
+$LOGGING
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1
     environment:
@@ -310,6 +340,7 @@ $LOGGING
       internal:
         ipv4_address: ${SUBNET}.1.6
     volumes:
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
 $LOGGING
