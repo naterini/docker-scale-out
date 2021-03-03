@@ -19,6 +19,10 @@ then
     ports:
       - 3000:3000
 "
+	ONDEMAND_PORTS="
+    ports:
+      - 8081:80
+"
 else
 	ES_PORTS=
 	KIBANA_PORTS=
@@ -68,6 +72,8 @@ HOSTLIST="    extra_hosts:
       - \"influxdb:${SUBNET6}1:19\"
       - \"grafana:${SUBNET}.1.20\"
       - \"grafana:${SUBNET6}1:20\"
+      - \"open-ondemand:${SUBNET}.1.21\"
+      - \"open-ondemand:${SUBNET6}1:21\"
 $(printip)"
 
 LOGGING="
@@ -116,6 +122,7 @@ networks:
 volumes:
   root-home:
   home:
+  etc-ssh:
   etc-slurm:
   slurmctld:
   elastic_data01:
@@ -183,6 +190,7 @@ $HOSTLIST
       - root-home:/root
       - home:/home/
       - slurmctld:/var/spool/slurm
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
@@ -205,6 +213,7 @@ $HOSTLIST
         ipv6_address: ${SUBNET6}1:4
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - home:/home/
       - slurmctld:/var/spool/slurm
@@ -229,6 +238,7 @@ $HOSTLIST
         ipv6_address: ${SUBNET6}1:5
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - home:/home/
       - slurmctld:/var/spool/slurm
@@ -259,6 +269,7 @@ cat <<EOF
         ipv6_address: $ip6
     volumes:
       - root-home:/root
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - home:/home/
       - /dev/log:/dev/log
@@ -284,6 +295,27 @@ EOF
 done
 
 cat <<EOF
+  open-ondemand:
+    build:
+      context: ./open-ondemand
+      network: host
+    image: open-ondemand
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - DEFAULT_SSHHOST=login
+    volumes:
+      - /dev/log:/dev/log
+      - etc-ssh:/etc/shared-ssh
+      - home:/home/
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.21
+        ipv6_address: ${SUBNET6}1:21
+    depends_on:
+      - "login"
+$ONDEMAND_PORTS
+$LOGGING
   influxdb:
     build:
       context: ./influxdb
@@ -430,6 +462,7 @@ $LOGGING
         ipv4_address: ${SUBNET}.1.6
         ipv6_address: ${SUBNET6}1:6
     volumes:
+      - etc-ssh:/etc/ssh
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
 $SYSDFSMOUNTS

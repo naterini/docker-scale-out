@@ -34,6 +34,11 @@ Grafana:
   * User: admin
   * Password: admin
 
+Open On-Demand:
+  * View http://localhost:8081/
+  * User: {user name - "fred" or "wilma"}
+  * Password: password
+
 Proxy:
   * Auth REST API http://localhost:8080/auth
   * Query REST API http://localhost:8080/slurm/
