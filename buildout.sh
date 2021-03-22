@@ -140,7 +140,10 @@ services:
         SUBNET6: "$SUBNET6"
       network: host
     environment:
-      - MYSQL_ROOT_PASSWORD="password"
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=slurm
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=slurm_acct_db
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
     volumes:
