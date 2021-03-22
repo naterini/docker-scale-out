@@ -11,7 +11,7 @@ RUN dnf config-manager --set-enabled powertools
 RUN dnf -y install \
 	rpm gcc automake make perl-macros.x86_64 rpm-build passwd \
 	readline-devel openssl-devel openssl pam-devel \
-	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb mariadb-server \
+	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb \
 	glib2-devel gtk2-devel libtool git vim gdb hostname \
 	perl-Switch expect lua-devel rrdtool-devel lz4-devel json-c-devel \
 	libcurl-devel freeipmi-devel numactl-devel lynx numactl \
@@ -36,7 +36,7 @@ RUN gem install mdless
 RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/munge.git /root/munge/
 WORKDIR /root/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
-RUN mkdir -p /etc/slurm /etc/pmix /var/log/mysql/
+RUN mkdir -p /etc/slurm /etc/pmix
 RUN git clone --depth 1 --single-branch -b release-2.1.12-stable https://github.com/libevent/libevent.git /root/libevent/
 RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://github.com/HDFGroup/hdf5.git /root/hdf5
 WORKDIR /root/hdf5
@@ -62,9 +62,8 @@ RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "scheduler daemon" -d "/etc/slurm" -g slurm -s /bin/bash -u 1001 -r slurm && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
-RUN ln -nfs /usr/share/mariadb/english/errmsg.sys /var/log/mysql/errmsg.sys
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
-RUN chown slurm:slurm -R /var/log/mysql/ /var/lib/mysql/ /var/spool/slurm
+RUN chown slurm:slurm -R /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
 RUN mkdir -m 0700 -p /etc/munge/ && \
