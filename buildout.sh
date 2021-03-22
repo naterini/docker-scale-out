@@ -132,13 +132,6 @@ volumes:
   auth:
 services:
   db:
-    build:
-      context: ./scaleout
-      args:
-        DOCKER_FROM: $DISTRO
-        SUBNET: "$SUBNET"
-        SUBNET6: "$SUBNET6"
-      network: host
     image: scaleout:latest
     environment:
       - SUBNET="${SUBNET}"
@@ -156,6 +149,13 @@ $LOGGING
         ipv6_address: "${SUBNET6}1:3"
 $HOSTLIST
   slurmdbd:
+    build:
+      context: ./scaleout
+      args:
+        DOCKER_FROM: $DISTRO
+        SUBNET: "$SUBNET"
+        SUBNET6: "$SUBNET6"
+      network: host
     image: scaleout:latest
     environment:
       - SUBNET="${SUBNET}"
