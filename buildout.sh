@@ -132,15 +132,19 @@ volumes:
   auth:
 services:
   db:
-    image: scaleout:latest
+    image: sql_server:latest
+    build:
+      context: ./sql_server
+      args:
+        SUBNET: "$SUBNET"
+        SUBNET6: "$SUBNET6"
+      network: host
     environment:
+      - MYSQL_ROOT_PASSWORD="password"
       - SUBNET="${SUBNET}"
       - SUBNET6="${SUBNET6}"
     volumes:
-      - root-home:/root
-      - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
-    command: ["bash", "-c", "/usr/bin/mysql_install_db --skip-name-resolve --defaults-file=/etc/my.cnf && exec mysqld_safe --defaults-file=/etc/my.cnf --init-file=/etc/mysql.init --syslog "]
     hostname: db
 $LOGGING
     networks:
