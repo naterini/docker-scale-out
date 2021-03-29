@@ -24,18 +24,20 @@ done
 
 if [ "$(hostname -s)" = "mgmtnode" ]
 then
-	props="$(slurmd -C | head -1 | sed 's#NodeName=mgmtnode ##g')"
-	for ((i=0;i<10;i++))
-	do
-		name=$(printf "node%02d" $i)
-		echo "NodeName=$name $props" >> /etc/slurm/slurm.conf
-	done
+	if [ ! -s /etc/slurm/nodes.conf ]
+	then
+		props="$(slurmd -C | head -1 | sed 's#NodeName=mgmtnode ##g')"
+		echo "NodeName=DEFAULT $props" >> /etc/slurm/nodes.conf
+
+		cat /etc/nodelist | while read name ip4 ip6
+		do
+			[ ! -z "$ip6" ] && addr="$ip6" || addr="$ip4"
+			echo "NodeName=$name NodeAddr=$addr" >> /etc/slurm/nodes.conf
+		done
+	fi
 else
-	while true
+	while [ ! -s /etc/slurm/nodes.conf ]
 	do
-		#wait until config is filled out by primary before starting
-		grep node00 /etc/slurm/slurm.conf 2>&1 >/dev/null
-		[ $? -eq 0 ] && sleep 1 && break
 		sleep 0.25
 	done
 fi
