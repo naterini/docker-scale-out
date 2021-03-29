@@ -17,6 +17,7 @@ set_nocache:
 nocache: set_nocache build
 
 clean:
+	docker-compose kill -s SIGKILL
 	docker-compose down --remove-orphans -t1 -v
 
 uninstall:
