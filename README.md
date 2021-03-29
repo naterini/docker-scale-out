@@ -55,6 +55,23 @@ Each cluster must have a unique class B subnet.
 Default IPv4 is SUBNET="10.11".
 Default IPv6 is SUBNET6="2001:db8:1:1::".
 
+## Custom Nodes
+
+Custom node lists may be provided by setting NODELIST to point to a file
+containing list of nodes for the cluster or modifing the default generated
+"nodelist" file in the scaleout directory.
+
+The node list follows the following format with one node per line:
+> ${HOSTNAME} ${IPv4} ${IPv6}
+
+Example line:
+> node00 10.11.5.0 2001:db8:1:1::5:0
+
+Note that the service nodes can not be changed and will always be placed into
+the following subnets:
+> ${SUBNET}.1.0/24
+> ${SUBNET6}1:0/122
+
 ## To build and run:
 
 ```

@@ -32,14 +32,19 @@ fi
 
 SUBNET=${SUBNET:-"10.11"}
 SUBNET6=${SUBNET6:-"2001:db8:1:1::"}
-#generate list of 10 nodes
-NODELIST=$(seq 0 9 | while read i
-do
-	echo "$(printf "node%02d" $i) ${SUBNET}.5.${i} ${SUBNET6}5:${i}"
-done)
+NODELIST=${NODELIST:-"scaleout/nodelist"}
+
+if [ ! -f "$NODELIST" ]
+then
+	#generate list of 10 nodes
+	seq 0 9 | while read i
+	do
+		echo "$(printf "node%02d" $i) ${SUBNET}.5.${i} ${SUBNET6}5:${i}"
+	done > $NODELIST
+fi
 
 printip() {
-	echo "$NODELIST" | while read name ip4 ip6
+	cat "$NODELIST" | while read name ip4 ip6
 	do
 		echo "      - \"$name:$ip4\""
 		echo "      - \"$name:$ip6\""
@@ -258,7 +263,7 @@ EOF
 
 lastname="mgmtnode"
 oi=0
-echo "$NODELIST" | while read name ip4 ip6
+cat "$NODELIST" | while read name ip4 ip6
 do
 	oi=$(($oi + 1))
 	i=$(($i + 1))
