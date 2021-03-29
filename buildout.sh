@@ -43,13 +43,12 @@ then
 	done > $NODELIST
 fi
 
-printip() {
-	cat "$NODELIST" | while read name ip4 ip6
-	do
-		echo "      - \"$name:$ip4\""
-		echo "      - \"$name:$ip6\""
-	done
-}
+unlink scaleout/hosts.nodes
+cat "$NODELIST" | while read name ip4 ip6
+do
+	[ ! -z "$ip4" ] && echo "$ip4 $name" >> scaleout/hosts.nodes
+	[ ! -z "$ip6" ] && echo "$ip6 $name" >> scaleout/hosts.nodes
+done
 
 HOSTLIST="    extra_hosts:
       - \"db:${SUBNET}.1.3\"
@@ -79,7 +78,7 @@ HOSTLIST="    extra_hosts:
       - \"grafana:${SUBNET6}1:20\"
       - \"open-ondemand:${SUBNET}.1.21\"
       - \"open-ondemand:${SUBNET6}1:21\"
-$(printip)"
+"
 
 LOGGING="
     logging:
@@ -303,7 +302,7 @@ $LOGGING
 $HOSTLIST
 EOF
 
-	[ $oi -gt 10 -a ! -z "$name" ] && oi=0 && lastname="$name"
+	[ $oi -gt 100 -a ! -z "$name" ] && oi=0 && lastname="$name"
 done
 
 cat <<EOF

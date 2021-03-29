@@ -223,4 +223,5 @@ COPY nodelist /etc/nodelist
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
 VOLUME ["/tmp", "/run", "/run/lock"]
-CMD [ "/lib/systemd/systemd", "--system", "--log-level=info", "--crash-reboot", "--log-target=journal-or-kmsg" ]
+COPY hosts.nodes /etc/
+CMD [ "/bin/bash", "-c", "cat /etc/hosts.nodes >> /etc/hosts; exec /lib/systemd/systemd --system --log-level=info --crash-reboot --log-target=journal-or-kmsg" ]
