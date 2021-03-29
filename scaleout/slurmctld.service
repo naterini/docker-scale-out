@@ -6,3 +6,4 @@ ExecStartPre=/usr/local/bin/slurmctld.startup.sh
 ExecStartPost=/usr/local/bin/slurmctld.startup2.sh
 user=slurm
 group=slurm
+TimeoutSec=1800
