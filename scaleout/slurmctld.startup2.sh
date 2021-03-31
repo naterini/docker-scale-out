@@ -1,9 +1,6 @@
 #!/bin/bash
-while true
+while [ ! -s /etc/slurm/nodes.conf ]
 do
-	#wait until config is filled out by primary before starting
-	grep node00 /etc/slurm/slurm.conf 2>&1 >/dev/null
-	[ $? -eq 0 ] && sleep 1 && break
 	sleep 0.25
 done
 
