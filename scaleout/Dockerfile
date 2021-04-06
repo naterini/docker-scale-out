@@ -20,7 +20,7 @@ RUN dnf -y install \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
-	systemd net-tools
+	systemd net-tools socat
 RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
 WORKDIR /root/ucx
 RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
@@ -146,7 +146,7 @@ RUN usermod -G managers fred && \
 #disable ssh host auth checks
 RUN echo -e '\nNoHostAuthenticationForLocalhost=yes\nStrictHostKeyChecking=no' >> /etc/ssh/ssh_config
 #ipv6 doesn't work in docker
-RUN echo -e '\nAddressFamily inet\nUseDNS no' >> /etc/ssh/sshd_config
+RUN echo -e '\nAddressFamily any\nUseDNS no' >> /etc/ssh/sshd_config
 
 #override the ssh host keys to be known
 RUN awk '{print "*", $1, $2}' </etc/ssh/ssh_host_ecdsa_key.pub >> /etc/ssh/ssh_known_hosts
@@ -185,6 +185,7 @@ COPY mysql /usr/local/bin/mysql
 COPY slurmctld.startup.sh /usr/local/bin/slurmctld.startup.sh
 COPY slurmctld.startup2.sh /usr/local/bin/slurmctld.startup2.sh
 COPY slurmd.startup.sh /usr/local/bin/slurmd.startup.sh
+COPY slurmd.check.sh /usr/local/bin/slurmd.check.sh
 COPY login.startup.sh /usr/local/bin/login.startup.sh
 COPY slurmrestd.startup.sh /usr/local/bin/slurmrestd.startup.sh
 COPY slurmrestd.env /etc/sysconfig/slurmrestd
@@ -210,6 +211,9 @@ RUN updatedb
 RUN rm -f /run/nologin
 WORKDIR /root/
 
+COPY resume.node.sh /usr/local/sbin/
+COPY suspend.node.sh /usr/local/sbin/
+RUN chmod 0755 /usr/local/sbin/{resume.node.sh,suspend.node.sh}
 RUN mkdir -p /etc/systemd/system/{postfix,slurmctld,slurmdbd,slurmd,slurmrestd}.service.d
 COPY slurmdbd.service /etc/systemd/system/slurmdbd.service.d/local.conf
 COPY slurmctld.service /etc/systemd/system/slurmctld.service.d/local.conf

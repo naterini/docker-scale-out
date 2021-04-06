@@ -106,6 +106,16 @@ SYSDFSMOUNTS="
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
 "
+if [ "$CLOUD" ]
+then
+	CLOUD_MOUNTS="
+      - type: bind
+        source: $(readlink -e $(pwd)/cloud_socket)
+        target: /run/cloud_socket
+"
+else
+	CLOUD_MOUNTS=""
+fi
 # disable Linux specific options
 [ $MAC ] && LOGGING=
 
@@ -207,6 +217,7 @@ $HOSTLIST
       - mail:/var/spool/mail/
       - auth:/auth/
 $SYSDFSMOUNTS
+$CLOUD_MOUNTS
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -231,6 +242,7 @@ $HOSTLIST
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
 $SYSDFSMOUNTS
+$CLOUD_MOUNTS
 $LOGGING
     depends_on:
       - "slurmdbd"
@@ -281,8 +293,8 @@ cat <<EOF
     hostname: $name
     networks:
       internal:
-        ipv4_address: $ip4
-        ipv6_address: $ip6
+        $i4
+        $i6
     volumes:
       - root-home:/root
       - etc-ssh:/etc/ssh
@@ -309,6 +321,39 @@ EOF
 
 	[ $oi -gt 100 -a ! -z "$name" ] && oi=0 && lastname="$name"
 done
+
+[ "$CLOUD" ] && cat <<EOF
+  cloud:
+    image: scaleout:latest
+    networks:
+      internal: {}
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - container=docker
+      - CLOUD=1
+    volumes:
+      - root-home:/root
+      - etc-ssh:/etc/ssh
+      - etc-slurm:/etc/slurm
+      - home:/home/
+      - /dev/log:/dev/log
+      - mail:/var/spool/mail/
+$SYSDFSMOUNTS
+$CLOUD_MOUNTS
+    ulimits:
+      nproc:
+        soft: 65535
+        hard: 65535
+      nofile:
+        soft: 131072
+        hard: 131072
+      memlock:
+        soft: -1
+        hard: -1
+$LOGGING
+$HOSTLIST
+EOF
 
 cat <<EOF
   open-ondemand:

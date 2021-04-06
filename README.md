@@ -78,6 +78,14 @@ the following subnets:
 make
 ```
 
+## To build and run in Cloud mode:
+
+```
+make cloud
+```
+
+Note: cloud mode will run in the foreground.
+
 ## To build without caching:
 
 ```

@@ -1,3 +1,4 @@
 [Service]
-ExecCondition=bash -c 'awk -vhost="$(hostname -s)" "BEGIN {rc = -1} \$1 == host {rc=0} END {exit rc}" /etc/nodelist'
+ExecCondition=/usr/local/bin/slurmd.check.sh
 ExecStartPre=/usr/local/bin/slurmd.startup.sh
+Environment="SLURMD_OPTIONS=-b"
