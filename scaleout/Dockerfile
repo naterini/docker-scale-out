@@ -193,6 +193,7 @@ RUN chmod 0755 /usr/local/bin/*.sh
 COPY globals.scaleout-slurmctld /root/slurm/testunit/expect/
 
 RUN cp /root/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
+RUN echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh
 
 RUN chmod 0755 /usr/local/bin/mysql
 RUN chmod 0755 /usr/local/bin/slurmctld.startup.sh
