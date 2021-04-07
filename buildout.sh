@@ -266,6 +266,11 @@ cat "$NODELIST" | while read name ip4 ip6
 do
 	oi=$(($oi + 1))
 	i=$(($i + 1))
+
+	i4=
+	i6=
+	[ ! -z "$ip4" ] && i4="ipv4_address: $ip4"
+	[ ! -z "$ip6" ] && i6="ipv6_address: $ip6"
 cat <<EOF
   $name:
     image: scaleout:latest
