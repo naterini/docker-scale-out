@@ -71,7 +71,7 @@ while True:
             if op[0] == "stop":
                 tag=node_names[op[1]]
 
-                os.system("docker stop \"%s\"" % (quote(tag)))
+                os.system("docker rm -f \"%s\"" % (quote(tag)))
                 taken_nodes.remove(tag)
                 node_names.pop(tag, None)
                 connection.sendall(b'ACK')
