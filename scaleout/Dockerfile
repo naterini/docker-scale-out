@@ -195,33 +195,32 @@ COPY globals.scaleout-slurmctld /root/slurm/testunit/expect/
 RUN cp /root/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
 RUN echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh
 
-RUN chmod 0755 /usr/local/bin/mysql
-RUN chmod 0755 /usr/local/bin/slurmctld.startup.sh
-RUN chmod 0755 /usr/local/bin/slurmd.startup.sh
-RUN chmod 0755 /usr/local/bin/login.startup.sh
-RUN chmod 0755 /usr/local/bin/slurmrestd.startup.sh
+RUN chmod 0755 /usr/local/bin/mysql && \
+	chmod 0755 /usr/local/bin/slurmctld.startup.sh && \
+	chmod 0755 /usr/local/bin/slurmd.startup.sh && \
+	chmod 0755 /usr/local/bin/login.startup.sh && \
+	chmod 0755 /usr/local/bin/slurmrestd.startup.sh
 RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
 	chmod 0755 /auth
 
 #RUN echo "define(`SMART_HOST', `login')dnl" >> /etc/mail/sendmail.mc
-RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf
-RUN ldconfig
-RUN updatedb
+RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf && \
+	ldconfig && updatedb
 RUN rm -f /run/nologin
 WORKDIR /root/
 
 COPY resume.node.sh /usr/local/sbin/
 COPY suspend.node.sh /usr/local/sbin/
-RUN chmod 0755 /usr/local/sbin/{resume.node.sh,suspend.node.sh}
-RUN mkdir -p /etc/systemd/system/{postfix,slurmctld,slurmdbd,slurmd,slurmrestd}.service.d
+RUN chmod 0755 /usr/local/sbin/{resume.node.sh,suspend.node.sh} && \
+	mkdir -p /etc/systemd/system/{postfix,slurmctld,slurmdbd,slurmd,slurmrestd}.service.d
 COPY slurmdbd.service /etc/systemd/system/slurmdbd.service.d/local.conf
 COPY slurmctld.service /etc/systemd/system/slurmctld.service.d/local.conf
 COPY slurmd.service /etc/systemd/system/slurmd.service.d/local.conf
 COPY slurmrestd.service /etc/systemd/system/slurmrestd.service.d/local.conf
 COPY postfix.service /etc/systemd/system/postfix.service.d/local.conf
-RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix
-RUN systemctl disable dnf-makecache.timer
-RUN systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
+RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
+	systemctl disable dnf-makecache.timer && \
+	systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
 COPY nodelist /etc/nodelist
 
 RUN systemctl enable munge
