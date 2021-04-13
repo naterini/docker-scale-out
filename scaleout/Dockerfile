@@ -1,7 +1,6 @@
 ARG DOCKER_FROM
 FROM ${DOCKER_FROM}
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib
+COPY profile.sh /etc/profile.d/container.sh
 # ood (open-ondemand user) is hardcoded to user 1000. must ensure uid is not different
 RUN groupadd -g 1000 ood && \
 	useradd --no-create-home --gid ood -u 1000 ood
