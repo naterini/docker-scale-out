@@ -174,7 +174,7 @@ RUN mandb
 
 RUN mkdir -p -m 0777 /lab_scripts
 COPY lab_scripts/* /lab_scripts/
-COPY slurm/* /etc/slurm/
+COPY slurm/ /etc/slurm/
 RUN chmod 0600 /etc/slurm/slurmdbd.conf
 RUN chown slurm:slurm /etc/slurm/slurmdbd.conf
 COPY my.cnf /etc/
