@@ -19,7 +19,8 @@ RUN dnf -y install \
 	openssh-server pam-devel xterm oniguruma-devel ruby \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
-	systemd net-tools socat
+	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
+	fuse-devel.x86_64 rpcgen.x86_64
 RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
 WORKDIR /root/ucx
 RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
@@ -108,6 +109,25 @@ RUN curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cl
 RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
 #https://pypi.org/project/openapi-python-client/
 
+RUN git clone --depth 1 --single-branch -b v0.9.1 https://github.com/NVIDIA/pyxis.git /root/pyxis
+WORKDIR /root/pyxis
+RUN make install
+
+RUN git clone --depth 1 --single-branch --branch 20210222 git://git.savannah.gnu.org/parallel.git /root/parallel
+WORKDIR /root/parallel
+RUN autoreconf -i && ./configure --disable-documentation && make -j >/dev/null && make install
+
+RUN git clone --depth 1 --single-branch --branch 0.1.103 https://github.com/vasi/squashfuse.git /root/squashfuse
+WORKDIR /root/squashfuse
+RUN autoreconf -i && ./configure && make -j >/dev/null && make install
+
+RUN git clone --recurse-submodules --depth 1 --single-branch --branch v3.3.0 https://github.com/NVIDIA/enroot.git /root/enroot
+WORKDIR /root/enroot
+COPY enroot.conf /tmp/enroot.conf
+RUN make sysconfdir=/etc/enroot/ -j >/dev/null && make install && make setcap && \
+	mkdir -p /etc/enroot/ && cat /tmp/enroot.conf >> /usr/local/etc/enroot/enroot.conf && \
+	unlink /tmp/enroot.conf && mkdir /run/enroot
+
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
 #make ssh host keys
@@ -138,6 +158,7 @@ RUN for i in arnold bambam barney betty chip dino edna fred gazoo pebbles wilma;
 	ssh-keygen -y -f /home/$i/.ssh/id_ecdsa > /home/$i/.ssh/id_ecdsa.pub && \
 	cat /home/$i/.ssh/id_ecdsa.pub >> /home/$i/.ssh/authorized_keys && \
 	chown -R $i:users /home/$i/.ssh && chmod -R 0700 /home/$i/.ssh; \
+	mkdir -p /home/$i/.enroot/{data,cache}; \
 	done
 RUN usermod -G managers fred && \
 	usermod -G managers barney
@@ -175,6 +196,7 @@ RUN mandb
 RUN mkdir -p -m 0777 /lab_scripts
 COPY lab_scripts/* /lab_scripts/
 COPY slurm/ /etc/slurm/
+RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf
 RUN chmod 0600 /etc/slurm/slurmdbd.conf
 RUN chown slurm:slurm /etc/slurm/slurmdbd.conf
 COPY my.cnf /etc/
