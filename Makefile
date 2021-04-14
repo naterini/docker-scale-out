@@ -1,5 +1,10 @@
 HOST ?= mgmtnode
 BUILD ?= up --build --remove-orphans -d
+
+.EXPORT_ALL_VARIABLES:
+SUBNET=10.11
+SUBNET6=2001:db8:1:1::
+
 default: run
 
 ./docker-compose.yml: buildout.sh
