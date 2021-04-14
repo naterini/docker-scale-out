@@ -48,7 +48,8 @@ WORKDIR /root/hwloc
 RUN ./autogen.sh && ./configure --prefix=/usr/local --sysconfdir=/etc/hwloc/ >/dev/null && make -j >/dev/null && make install >/dev/null
 RUN git clone --depth 1 --single-branch -b v3.1.2 https://github.com/pmix/pmix.git /root/pmix/
 WORKDIR /root/pmix
-RUN ./autogen.pl && ./configure --prefix=/usr/local --sysconfdir=/etc/pmix/ --with-devel-headers --with-tests-examples  --enable-debug --with-libevent=/usr/local/ >/dev/null && make -j && make install >/dev/null
+RUN ./autogen.pl && ./configure --prefix=/usr/local --sysconfdir=/etc/pmix/ --with-devel-headers --with-tests-examples  --enable-debug --with-libevent=/usr/local/ >/dev/null && \
+	make -j >/dev/null && make install >/dev/null
 RUN git clone --depth 1 --single-branch -b master https://github.com/SchedMD/slurm.git /root/slurm
 WORKDIR /root/slurm
 RUN git config --global user.email "you@example.com"
