@@ -64,6 +64,7 @@ HOSTLIST="    extra_hosts:
       - \"rest:${SUBNET}.1.6\"
       - \"rest:${SUBNET6}1:6\"
       - \"proxy:${SUBNET}.1.7\"
+      - \"proxy:${SUBNET6}1:7\"
       - \"es01:${SUBNET}.1.15\"
       - \"es01:${SUBNET6}1:15\"
       - \"es02:${SUBNET}.1.16\"
