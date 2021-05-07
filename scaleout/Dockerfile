@@ -20,7 +20,7 @@ RUN dnf -y install \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
-	fuse-devel.x86_64 rpcgen.x86_64
+	fuse-devel.x86_64 rpcgen.x86_64 cronie
 RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
 WORKDIR /root/ucx
 RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
@@ -232,6 +232,7 @@ RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_li
 RUN rm -f /run/nologin
 WORKDIR /root/
 
+COPY dump_xdmod.sh /etc/cron.hourly/dump_xdmod.sh
 COPY resume.node.sh /usr/local/sbin/
 COPY suspend.node.sh /usr/local/sbin/
 RUN chmod 0755 /usr/local/sbin/{resume.node.sh,suspend.node.sh} && \

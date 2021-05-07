@@ -147,6 +147,7 @@ volumes:
   elastic_data03:
   mail:
   auth:
+  xdmod:
 services:
   db:
     image: sql_server:latest
@@ -219,6 +220,7 @@ $HOSTLIST
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
       - auth:/auth/
+      - xdmod:/xdmod/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
 $LOGGING
@@ -585,6 +587,7 @@ $HOSTLIST
       - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
+      - xdmod:/xdmod/
 $LOGGING
 $HOSTLIST
 EOF
