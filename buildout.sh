@@ -79,6 +79,8 @@ HOSTLIST="    extra_hosts:
       - \"grafana:${SUBNET6}1:20\"
       - \"open-ondemand:${SUBNET}.1.21\"
       - \"open-ondemand:${SUBNET6}1:21\"
+      - \"xdmod:${SUBNET}.1.22\"
+      - \"xdmod:${SUBNET6}1:22\"
 "
 
 LOGGING="
@@ -554,6 +556,36 @@ $LOGGING
 ${PROXY_PORTS}
     depends_on:
       - "rest"
+$HOSTLIST
+  xdmod:
+    build:
+      context: ./xdmod
+      network: host
+    image: xdmod:latest
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - container=docker
+    hostname: xdmod
+    command: ["/sbin/startup.sh"]
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.22
+        ipv6_address: ${SUBNET6}1:22
+    volumes:
+      - /dev/log:/dev/log
+# would use SYSDFSMOUNTS here but sysd in cent7 cant handle cgroup/systemd mount
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /etc/localtime:/etc/localtime:ro
+      - /sys/:/sys/:ro
+      - /sys/firmware
+      - /sys/kernel
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/fuse/:/sys/fs/fuse/
+      - /var/lib/journal
+$LOGGING
 $HOSTLIST
 EOF
 
