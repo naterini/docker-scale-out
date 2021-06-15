@@ -104,6 +104,10 @@ RUN curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cl
 RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
 #https://pypi.org/project/openapi-python-client/
 
+RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /root/stressng
+WORKDIR /root/stressng
+RUN make -j >/dev/null && make install
+
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
 #make ssh host keys
