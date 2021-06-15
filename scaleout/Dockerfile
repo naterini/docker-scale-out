@@ -129,6 +129,10 @@ RUN make sysconfdir=/etc/enroot/ -j >/dev/null && make install && make setcap &&
 	mkdir -p /etc/enroot/ && cat /tmp/enroot.conf >> /usr/local/etc/enroot/enroot.conf && \
 	unlink /tmp/enroot.conf && mkdir /run/enroot
 
+RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /root/stressng
+WORKDIR /root/stressng
+RUN make -j >/dev/null && make install
+
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
 #make ssh host keys
