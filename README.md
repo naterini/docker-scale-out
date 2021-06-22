@@ -72,7 +72,13 @@ the following subnets:
 > ${SUBNET}.1.0/24
 > ${SUBNET6}1:0/122
 
-## To build and run:
+## To build images
+
+```
+make build
+```
+
+## To run:
 
 ```
 make
