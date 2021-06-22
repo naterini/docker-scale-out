@@ -47,7 +47,13 @@ Rest API Nodes:
 ## Multiple Instances
 Each cluster must have a unique class B subnet. The default SUBNET="10.11".
 
-## To build and run:
+## To build images
+
+```
+make build
+```
+
+## To run:
 
 ```
 make

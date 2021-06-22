@@ -23,7 +23,7 @@ uninstall:
 	docker-compose down --rmi all --remove-orphans -t1 -v
 	docker-compose rm -v
 
-run: build
+run:
 	docker-compose up --remove-orphans -d
 
 bash: run
