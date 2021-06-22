@@ -2,9 +2,9 @@ FROM alpine
 RUN mkdir -p /run/nginx/ /var/www/html/validate /var/www/html/auth
 RUN mkdir -p /var/www/html/slurm
 RUN apk update && apk add nginx php7-fpm bash php7-session nginx-debug
-RUN unlink /etc/nginx/conf.d/default.conf
+RUN unlink /etc/nginx/http.d/default.conf
 COPY www.conf /etc/php7/php-fpm.d/www.conf
-COPY nginx.conf /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/http.d/
 COPY validate.php /var/www/html/validate/index.php
 COPY auth.php /var/www/html/auth/index.php
 RUN chmod 0755 /var/www/html/validate/index.php /var/www/html/auth/index.php
