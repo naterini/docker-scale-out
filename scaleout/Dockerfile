@@ -170,7 +170,6 @@ RUN usermod -G managers fred && \
 
 #disable ssh host auth checks
 RUN echo -e '\nNoHostAuthenticationForLocalhost=yes\nStrictHostKeyChecking=no' >> /etc/ssh/ssh_config
-#ipv6 doesn't work in docker
 RUN echo -e '\nAddressFamily any\nUseDNS no' >> /etc/ssh/sshd_config
 
 #override the ssh host keys to be known
