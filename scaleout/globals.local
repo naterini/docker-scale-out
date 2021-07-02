@@ -6,3 +6,4 @@ set my_slurm_base "/usr/local/"
 set src_dir "/root/slurm/"
 set partition "debug"
 set use_pmi 1
+set testsuite_cleanup_on_failure false

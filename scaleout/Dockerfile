@@ -216,7 +216,6 @@ COPY slurmrestd.startup.sh /usr/local/bin/slurmrestd.startup.sh
 COPY slurmrestd.env /etc/sysconfig/slurmrestd
 RUN sed -e "s/{SUBNET}/${SUBNET}/" -i /etc/sysconfig/slurmrestd
 RUN chmod 0755 /usr/local/bin/*.sh
-COPY globals.scaleout-slurmctld /root/slurm/testunit/expect/
 
 RUN cp /root/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
 RUN echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh
@@ -228,6 +227,9 @@ RUN chmod 0755 /usr/local/bin/mysql && \
 	chmod 0755 /usr/local/bin/slurmrestd.startup.sh
 RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
 	chmod 0755 /auth
+
+ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.local
+COPY globals.local /root/slurm/testunit/expect/globals.local
 
 #RUN echo "define(`SMART_HOST', `login')dnl" >> /etc/mail/sendmail.mc
 RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf && \
