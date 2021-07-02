@@ -133,7 +133,9 @@ RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.co
 WORKDIR /root/stressng
 RUN make -j >/dev/null && make install
 
-ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
+RUN git clone --depth 1 --single-branch --branch 1.26.6 https://github.com/urllib3/urllib3.git /root/urllib3 && \
+	cd /root/urllib3 && \
+	python3 setup.py install
 
 #make ssh host keys
 RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa && \
