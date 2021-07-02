@@ -201,9 +201,9 @@ RUN mandb
 RUN mkdir -p -m 0777 /lab_scripts
 COPY lab_scripts/* /lab_scripts/
 COPY slurm/ /etc/slurm/
-RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf
-RUN chmod 0600 /etc/slurm/slurmdbd.conf
-RUN chown slurm:slurm /etc/slurm/slurmdbd.conf
+RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
+	chmod 0600 /etc/slurm/slurmdbd.conf && \
+	chown slurm:slurm /etc/slurm/slurmdbd.conf
 COPY my.cnf /etc/
 RUN sed -e "s#{SUBNET}#${SUBNET}#g" -i /etc/my.cnf
 RUN ln -s /etc/my.cnf /usr/local/etc/my.cnf
@@ -232,8 +232,8 @@ RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
 
 #RUN echo "define(`SMART_HOST', `login')dnl" >> /etc/mail/sendmail.mc
 RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf && \
-	ldconfig && updatedb
-RUN rm -f /run/nologin
+	ldconfig && updatedb && \
+	rm -f /run/nologin
 WORKDIR /root/
 
 COPY dump_xdmod.sh /etc/cron.hourly/dump_xdmod.sh
