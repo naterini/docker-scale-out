@@ -19,6 +19,7 @@ CLUSTERNAME="$(awk -F= '/^ClusterName=/ {print $2}' /etc/slurm/slurm.conf)"
 sacctmgr -vi add cluster "$CLUSTERNAME"
 sacctmgr -vi add account bedrock Cluster="$CLUSTERNAME" Description="none" Organization="none"
 sacctmgr -vi add user root Account=bedrock DefaultAccount=bedrock
+sacctmgr -vi add user slurm Account=bedrock DefaultAccount=bedrock
 
 for i in arnold bambam barney betty chip dino edna fred gazoo pebbles wilma
 do

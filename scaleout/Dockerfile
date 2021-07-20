@@ -57,14 +57,15 @@ RUN git config --global user.name "scale out"
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
 	--with-ucx=/usr/local --sharedstatedir=/var/run/ \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
-	make -j >/dev/null && make install >/dev/null && make -j install-contrib >/dev/null
-RUN cd contribs && make install
+	make -j >/dev/null && make install >/dev/null && make -j install-contrib >/dev/null && \
+	cd contribs && make install
 RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "scheduler daemon" -d "/etc/slurm" -g slurm -s /bin/bash -u 1001 -r slurm && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
-RUN chown slurm:slurm -R /var/spool/slurm
+RUN chown slurm:slurm -R /var/spool/slurm && \
+	cp -par /root/slurm/testsuite / && chown -R slurm:slurm /testsuite/
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
 RUN mkdir -m 0700 -p /etc/munge/ && \
@@ -230,8 +231,8 @@ RUN chmod 0755 /usr/local/bin/mysql && \
 RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
 	chmod 0755 /auth
 
-ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.local
-COPY globals.local /root/slurm/testunit/expect/globals.local
+ENV SLURM_LOCAL_GLOBALS_FILE=/testsuite/expect/globals.local
+COPY globals.local /testsuite/expect/globals.local
 
 #RUN echo "define(`SMART_HOST', `login')dnl" >> /etc/mail/sendmail.mc
 RUN echo -e "/usr/local/lib\n/usr/local/lib64" >> /etc/ld.so.conf.d/usr_local_lib.conf && \
