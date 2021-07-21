@@ -46,7 +46,7 @@ RUN ./autogen.sh && ./configure --prefix=/usr/local >/dev/null && make -j >/dev/
 RUN git clone --depth 1 --single-branch -b hwloc-2.0.2 https://github.com/open-mpi/hwloc.git /root/hwloc/
 WORKDIR /root/hwloc
 RUN ./autogen.sh && ./configure --prefix=/usr/local --sysconfdir=/etc/hwloc/ >/dev/null && make -j >/dev/null && make install >/dev/null
-RUN git clone --depth 1 --single-branch -b v3.1.2 https://github.com/pmix/pmix.git /root/pmix/
+RUN git clone --depth 1 --single-branch -b v3.2.3 https://github.com/pmix/pmix.git /root/pmix/
 WORKDIR /root/pmix
 RUN ./autogen.pl && ./configure --prefix=/usr/local --sysconfdir=/etc/pmix/ --with-devel-headers --with-tests-examples  --enable-debug --with-libevent=/usr/local/ >/dev/null && \
 	make -j >/dev/null && make install >/dev/null
