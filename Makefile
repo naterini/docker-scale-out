@@ -30,13 +30,13 @@ uninstall:
 	docker-compose down --rmi all --remove-orphans -t1 -v
 	docker-compose rm -v
 
-run:
+run: build
 	docker-compose up --remove-orphans -d
 
-cloud:
+cloud: build
 	touch cloud_socket
 	env CLOUD=1 bash buildout.sh > ./docker-compose.yml
 	python3 cloud_monitor.py3 docker-compose up --build --remove-orphans --scale cloud=0 -d
 
-bash:
+bash: run
 	docker-compose exec $(HOST) /bin/bash
