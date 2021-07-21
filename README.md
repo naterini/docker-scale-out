@@ -134,8 +134,9 @@ ssh -o StrictHostKeyChecking=no -l fred 10.11.1.5 -X #use 'password'
 
 ## Changes needed for sysctl.conf to make it run:
 ```
-net.core.somaxconn=1024
-net.ipv4.tcp_max_syn_backlog=2048
+net.ipv4.tcp_max_syn_backlog=4096
+net.core.netdev_max_backlog=1000
+net.core.somaxconn=15000
 fs.file-max=992832
 
 # Force gc to clean-up quickly
