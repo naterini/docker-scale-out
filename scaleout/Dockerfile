@@ -82,9 +82,9 @@ RUN git clone --depth 1 --single-branch -b pdsh-2.33 https://github.com/chaos/pd
 WORKDIR /root/pdsh
 RUN autoreconf -i && ./configure --without-rsh --with-ssh --prefix=/usr/local --sysconfdir=/etc/ --with-readline && make -j >/dev/null && make install >/dev/null
 WORKDIR /root/
-RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.1.tar.gz' -O /root/openmpi.tar.gz
+RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz' -O /root/openmpi.tar.gz
 RUN tar -xzf /root/openmpi.tar.gz
-WORKDIR /root/openmpi-4.0.1/
+WORKDIR /root/openmpi-4.1.1/
 RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/usr/local/lib --with-pmi=/usr/local --with-slurm --with-devel-headers --enable-debug --without-cma \
 	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/ \
 	--with-ucx=/usr/local --enable-mca-no-build=btl-uct
