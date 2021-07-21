@@ -20,10 +20,10 @@ RUN dnf -y install \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
-	fuse-devel.x86_64 rpcgen.x86_64 cronie
-RUN git clone --depth 1 --single-branch -b v1.9.0 https://github.com/openucx/ucx.git /root/ucx/
+	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel
+RUN git clone --depth 1 --single-branch -b v1.10.1 https://github.com/openucx/ucx.git /root/ucx/
 WORKDIR /root/ucx
-RUN ./autogen.sh && ./contrib/configure-release --prefix=/usr/local/ && make -j install
+RUN ./autogen.sh && ./contrib/configure-devel --prefix=/usr/local/ && make -j install
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
 WORKDIR /root/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
@@ -254,6 +254,8 @@ RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
 	systemctl disable dnf-makecache.timer && \
 	systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
 COPY nodelist /etc/nodelist
+
+ENV UCX_TLS=tcp
 
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
