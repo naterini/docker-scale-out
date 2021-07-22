@@ -21,37 +21,37 @@ RUN dnf -y install \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
 	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel
-RUN git clone --depth 1 --single-branch -b v1.10.1 https://github.com/openucx/ucx.git /root/ucx/
-WORKDIR /root/ucx
+RUN git clone --depth 1 --single-branch -b v1.10.1 https://github.com/openucx/ucx.git /usr/local/src/ucx/
+WORKDIR /usr/local/src/ucx
 RUN ./autogen.sh && ./contrib/configure-devel --prefix=/usr/local/ && make -j install
-RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /root/libjwt/
-WORKDIR /root/libjwt
+RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /usr/local/src/libjwt/
+WORKDIR /usr/local/src/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
-RUN git clone --depth 1 --single-branch -b jq-1.6 https://github.com/stedolan/jq.git /root/jq/
-WORKDIR /root/jq
+RUN git clone --depth 1 --single-branch -b jq-1.6 https://github.com/stedolan/jq.git /usr/local/src/jq/
+WORKDIR /usr/local/src/jq
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ --disable-maintainer-mode && make -j && make install
-RUN git clone --depth 1 --single-branch -b 1.0.15 https://github.com/ttscoff/mdless.git /root/mdless/
-WORKDIR /root/mdless
+RUN git clone --depth 1 --single-branch -b 1.0.15 https://github.com/ttscoff/mdless.git /usr/local/src/mdless/
+WORKDIR /usr/local/src/mdless
 RUN gem install mdless
-RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/munge.git /root/munge/
-WORKDIR /root/munge/
+RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/munge.git /usr/local/src/munge/
+WORKDIR /usr/local/src/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
 RUN mkdir -p /etc/slurm /etc/pmix
-RUN git clone --depth 1 --single-branch -b release-2.1.12-stable https://github.com/libevent/libevent.git /root/libevent/
-RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://github.com/HDFGroup/hdf5.git /root/hdf5
-WORKDIR /root/hdf5
+RUN git clone --depth 1 --single-branch -b release-2.1.12-stable https://github.com/libevent/libevent.git /usr/local/src/libevent/
+RUN git clone -b hdf5-1_10_6 --single-branch --depth 1 https://github.com/HDFGroup/hdf5.git /usr/local/src/hdf5
+WORKDIR /usr/local/src/hdf5
 RUN ./configure --prefix=/usr/local/ >/dev/null && make -j install >/dev/null
-WORKDIR /root/libevent
+WORKDIR /usr/local/src/libevent
 RUN ./autogen.sh && ./configure --prefix=/usr/local >/dev/null && make -j >/dev/null && make install >/dev/null
-RUN git clone --depth 1 --single-branch -b hwloc-2.0.2 https://github.com/open-mpi/hwloc.git /root/hwloc/
-WORKDIR /root/hwloc
+RUN git clone --depth 1 --single-branch -b hwloc-2.0.2 https://github.com/open-mpi/hwloc.git /usr/local/src/hwloc/
+WORKDIR /usr/local/src/hwloc
 RUN ./autogen.sh && ./configure --prefix=/usr/local --sysconfdir=/etc/hwloc/ >/dev/null && make -j >/dev/null && make install >/dev/null
-RUN git clone --depth 1 --single-branch -b v3.2.3 https://github.com/pmix/pmix.git /root/pmix/
-WORKDIR /root/pmix
+RUN git clone --depth 1 --single-branch -b v3.2.3 https://github.com/pmix/pmix.git /usr/local/src/pmix/
+WORKDIR /usr/local/src/pmix
 RUN ./autogen.pl && ./configure --prefix=/usr/local --sysconfdir=/etc/pmix/ --with-devel-headers --with-tests-examples  --enable-debug --with-libevent=/usr/local/ >/dev/null && \
 	make -j >/dev/null && make install >/dev/null
-RUN git clone --depth 1 --single-branch -b master https://github.com/SchedMD/slurm.git /root/slurm
-WORKDIR /root/slurm
+RUN git clone --depth 1 --single-branch -b master https://github.com/SchedMD/slurm.git /usr/local/src/slurm
+WORKDIR /usr/local/src/slurm
 RUN git config --global user.email "you@example.com"
 RUN git config --global user.name "scale out"
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
@@ -65,7 +65,7 @@ RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
 RUN chown slurm:slurm -R /var/spool/slurm && \
-	cp -par /root/slurm/testsuite / && chown -R slurm:slurm /testsuite/
+	cp -par /usr/local/src/slurm/testsuite / && chown -R slurm:slurm /testsuite/
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
 RUN mkdir -m 0700 -p /etc/munge/ && \
@@ -78,20 +78,19 @@ RUN touch /etc/munge/munge.seed
 RUN chown munge:munge -R /etc/munge
 RUN chmod 0400 /etc/munge/munge.key /etc/munge/munge.seed
 RUN chown root:root /etc/munge/ -R && chown -R munge:munge /etc/munge
-RUN git clone --depth 1 --single-branch -b pdsh-2.33 https://github.com/chaos/pdsh.git /root/pdsh/
-WORKDIR /root/pdsh
+RUN git clone --depth 1 --single-branch -b pdsh-2.33 https://github.com/chaos/pdsh.git /usr/local/src/pdsh/
+WORKDIR /usr/local/src/pdsh
 RUN autoreconf -i && ./configure --without-rsh --with-ssh --prefix=/usr/local --sysconfdir=/etc/ --with-readline && make -j >/dev/null && make install >/dev/null
-WORKDIR /root/
-RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz' -O /root/openmpi.tar.gz
-RUN tar -xzf /root/openmpi.tar.gz
-WORKDIR /root/openmpi-4.1.1/
+WORKDIR /usr/local/src/
+RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz' -O /usr/local/src/openmpi.tar.gz
+RUN tar -xzf /usr/local/src/openmpi.tar.gz
+WORKDIR /usr/local/src/openmpi-4.1.1/
 RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/usr/local/lib --with-pmi=/usr/local --with-slurm --with-devel-headers --enable-debug --without-cma \
 	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/ \
 	--with-ucx=/usr/local --enable-mca-no-build=btl-uct
 RUN	make -j >/dev/null && make install >/dev/null
-WORKDIR /root
-RUN git clone --depth 1 --branch msmtp-1.8.6 https://github.com/marlam/msmtp-mirror.git msmtp
-WORKDIR /root/msmtp
+RUN git clone --depth 1 --branch msmtp-1.8.6 https://github.com/marlam/msmtp-mirror.git /usr/local/src/msmtp
+WORKDIR /usr/local/src/msmtp
 RUN autoreconf -i && ./configure && make -j >/dev/null && make install >/dev/null && \
 	ln -nfs /usr/local/bin/msmtp /usr/sbin/sendmail && \
 	ln -nfs /usr/local/bin/msmtp /usr/lib/sendmail
@@ -111,31 +110,31 @@ RUN curl -s https://oss.sonatype.org/content/repositories/snapshots/org/openapit
 RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
 #https://pypi.org/project/openapi-python-client/
 
-RUN git clone --depth 1 --single-branch -b v0.9.1 https://github.com/NVIDIA/pyxis.git /root/pyxis
-WORKDIR /root/pyxis
+RUN git clone --depth 1 --single-branch -b v0.9.1 https://github.com/NVIDIA/pyxis.git /usr/local/src/pyxis
+WORKDIR /usr/local/src/pyxis
 RUN make install
 
-RUN git clone --depth 1 --single-branch --branch 20210222 git://git.savannah.gnu.org/parallel.git /root/parallel
-WORKDIR /root/parallel
+RUN git clone --depth 1 --single-branch --branch 20210222 git://git.savannah.gnu.org/parallel.git /usr/local/src/parallel
+WORKDIR /usr/local/src/parallel
 RUN autoreconf -i && ./configure --disable-documentation && make -j >/dev/null && make install
 
-RUN git clone --depth 1 --single-branch --branch 0.1.103 https://github.com/vasi/squashfuse.git /root/squashfuse
-WORKDIR /root/squashfuse
+RUN git clone --depth 1 --single-branch --branch 0.1.103 https://github.com/vasi/squashfuse.git /usr/local/src/squashfuse
+WORKDIR /usr/local/src/squashfuse
 RUN autoreconf -i && ./configure && make -j >/dev/null && make install
 
-RUN git clone --recurse-submodules --depth 1 --single-branch --branch v3.3.0 https://github.com/NVIDIA/enroot.git /root/enroot
-WORKDIR /root/enroot
+RUN git clone --recurse-submodules --depth 1 --single-branch --branch v3.3.0 https://github.com/NVIDIA/enroot.git /usr/local/src/enroot
+WORKDIR /usr/local/src/enroot
 COPY enroot.conf /tmp/enroot.conf
 RUN make sysconfdir=/etc/enroot/ -j >/dev/null && make install && make setcap && \
 	mkdir -p /etc/enroot/ && cat /tmp/enroot.conf >> /usr/local/etc/enroot/enroot.conf && \
 	unlink /tmp/enroot.conf && mkdir /run/enroot
 
-RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /root/stressng
-WORKDIR /root/stressng
+RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /usr/local/src/stressng
+WORKDIR /usr/local/src/stressng
 RUN make -j >/dev/null && make install
 
-RUN git clone --depth 1 --single-branch --branch 1.26.6 https://github.com/urllib3/urllib3.git /root/urllib3 && \
-	cd /root/urllib3 && \
+RUN git clone --depth 1 --single-branch --branch 1.26.6 https://github.com/urllib3/urllib3.git /usr/local/src/urllib3 && \
+	cd /usr/local/src/urllib3 && \
 	python3 setup.py install
 
 #make ssh host keys
@@ -220,7 +219,7 @@ COPY slurmrestd.env /etc/sysconfig/slurmrestd
 RUN sed -e "s/{SUBNET}/${SUBNET}/" -i /etc/sysconfig/slurmrestd
 RUN chmod 0755 /usr/local/bin/*.sh
 
-RUN cp /root/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
+RUN cp /usr/local/src/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
 RUN echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh
 
 RUN chmod 0755 /usr/local/bin/mysql && \
