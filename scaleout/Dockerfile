@@ -107,6 +107,9 @@ RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.ja
 RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /root/stressng
 WORKDIR /root/stressng
 RUN make -j >/dev/null && make install
+RUN git clone --depth 1 --single-branch --branch v1.8.3 https://github.com/cea-hpc/clustershell.git /root/clush
+WORKDIR /root/clush
+RUN python3 ./setup.py install
 
 ENV SLURM_LOCAL_GLOBALS_FILE=/root/slurm/testunit/expect/globals.scaleout-slurmctld
 
