@@ -132,6 +132,9 @@ RUN make sysconfdir=/etc/enroot/ -j >/dev/null && make install && make setcap &&
 RUN git clone --depth 1 --single-branch --branch V0.12.10 git://kernel.ubuntu.com/cking/stress-ng.git /usr/local/src/stressng
 WORKDIR /usr/local/src/stressng
 RUN make -j >/dev/null && make install
+RUN git clone --depth 1 --single-branch --branch v1.8.3 https://github.com/cea-hpc/clustershell.git /usr/local/src/clush
+WORKDIR /usr/local/src/clush
+RUN python3 ./setup.py install
 
 RUN git clone --depth 1 --single-branch --branch 1.26.6 https://github.com/urllib3/urllib3.git /usr/local/src/urllib3 && \
 	cd /usr/local/src/urllib3 && \
