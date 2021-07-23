@@ -52,8 +52,10 @@ RUN ./autogen.pl && ./configure --prefix=/usr/local --sysconfdir=/etc/pmix/ --wi
 	make -j >/dev/null && make install >/dev/null
 RUN git clone --depth 1 --single-branch -b master https://github.com/SchedMD/slurm.git /usr/local/src/slurm
 WORKDIR /usr/local/src/slurm
-RUN git config --global user.email "you@example.com"
-RUN git config --global user.name "scale out"
+RUN git config --global user.email "you@example.com" && \
+	git config --global user.name "scale out"
+COPY patch patch
+RUN test -s patch && (git am patch) || true
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
 	--with-ucx=/usr/local --sharedstatedir=/var/run/ \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
