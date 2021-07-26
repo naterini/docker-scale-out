@@ -148,7 +148,6 @@ volumes:
   mail:
   auth:
   xdmod:
-  testsuite:
 services:
   db:
     image: sql_server:latest
@@ -196,7 +195,6 @@ $HOSTLIST
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
 $LOGGING
     depends_on:
@@ -223,7 +221,6 @@ $HOSTLIST
       - mail:/var/spool/mail/
       - auth:/auth/
       - xdmod:/xdmod/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
 $LOGGING
@@ -249,7 +246,6 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
 $LOGGING
@@ -276,7 +272,6 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
 $LOGGING
 $HOSTLIST
@@ -312,7 +307,6 @@ cat <<EOF
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
     ulimits:
       nproc:
@@ -350,7 +344,6 @@ done
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
-      - testsuite:/testsuite/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
     ulimits:
