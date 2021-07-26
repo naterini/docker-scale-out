@@ -23,7 +23,7 @@ nocache: set_nocache build
 
 clean:
 	test -f ./docker-compose.yml && (docker-compose kill -s SIGKILL; docker-compose down --remove-orphans -t1 -v; unlink ./docker-compose.yml) || true
-	[ -f cloud_socket ] && unlink cloud_socket
+	[ -f cloud_socket ] && unlink cloud_socket || true
 
 uninstall:
 	docker-compose down --rmi all --remove-orphans -t1 -v
