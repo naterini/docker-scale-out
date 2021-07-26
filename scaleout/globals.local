@@ -1,6 +1,6 @@
 set my_cluster "scaleout-slurmctld"
 set slurm_dir "/usr/local/"
-set build_dir "/root/slurm/"
+set build_dir "/usr/local/src/slurm/"
 set my_version "master"
 set my_slurm_base "/usr/local/"
 set src_dir "/root/slurm/"
