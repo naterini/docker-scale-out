@@ -148,6 +148,7 @@ volumes:
   mail:
   auth:
   xdmod:
+  src:
 services:
   db:
     image: sql_server:latest
@@ -221,6 +222,7 @@ $HOSTLIST
       - mail:/var/spool/mail/
       - auth:/auth/
       - xdmod:/xdmod/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
 $LOGGING
@@ -246,6 +248,7 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
 $LOGGING
@@ -272,6 +275,7 @@ $HOSTLIST
       - slurmctld:/var/spool/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
 $LOGGING
 $HOSTLIST
@@ -307,6 +311,7 @@ cat <<EOF
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
     ulimits:
       nproc:
@@ -344,6 +349,7 @@ done
       - home:/home/
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
 $CLOUD_MOUNTS
     ulimits:
