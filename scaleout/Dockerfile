@@ -66,8 +66,7 @@ RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
 	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
-RUN chown slurm:slurm -R /var/spool/slurm && \
-	chown -R slurm:slurm /usr/local/src/slurm/testsuite
+RUN chown slurm:slurm -R /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
 RUN /usr/sbin/useradd -c "MUNGE authentication service" -d "/usr/local/etc/munge" -g munge -s /bin/false -r munge
 RUN mkdir -m 0700 -p /etc/munge/ && \
@@ -233,7 +232,8 @@ RUN chmod 0755 /usr/local/bin/mysql && \
 	chmod 0755 /usr/local/bin/login.startup.sh && \
 	chmod 0755 /usr/local/bin/slurmrestd.startup.sh
 RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
-	chmod 0755 /auth
+	chmod 0755 /auth && \
+	chown -R slurm:slurm /usr/local/src/
 
 COPY globals.local /usr/local/src/slurm/testsuite/expect/globals.local
 
