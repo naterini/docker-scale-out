@@ -21,9 +21,6 @@ RUN dnf -y install \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
 	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel
-RUN git clone --depth 1 --single-branch -b v1.10.1 https://github.com/openucx/ucx.git /usr/local/src/ucx/
-WORKDIR /usr/local/src/ucx
-RUN ./autogen.sh && ./contrib/configure-devel --prefix=/usr/local/ && make -j install
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /usr/local/src/libjwt/
 WORKDIR /usr/local/src/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
@@ -57,7 +54,7 @@ RUN git config --global user.email "you@example.com" && \
 COPY patch patch
 RUN test -s patch && (git am patch) || true
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
-	--with-ucx=/usr/local --sharedstatedir=/var/run/ \
+	--sharedstatedir=/var/run/ \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
 	make -j >/dev/null && make install >/dev/null && make -j install-contrib >/dev/null && \
 	cd contribs && make install
@@ -88,7 +85,7 @@ RUN tar -xzf /usr/local/src/openmpi.tar.gz
 WORKDIR /usr/local/src/openmpi-4.1.1/
 RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/usr/local/lib --with-pmi=/usr/local --with-slurm --with-devel-headers --enable-debug --without-cma \
 	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/ \
-	--with-ucx=/usr/local --enable-mca-no-build=btl-uct
+	--enable-mca-no-build=btl-uct
 RUN	make -j >/dev/null && make install >/dev/null
 RUN git clone --depth 1 --branch msmtp-1.8.6 https://github.com/marlam/msmtp-mirror.git /usr/local/src/msmtp
 WORKDIR /usr/local/src/msmtp
@@ -257,8 +254,6 @@ RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
 	systemctl disable dnf-makecache.timer && \
 	systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
 COPY nodelist /etc/nodelist
-
-ENV UCX_TLS=tcp
 
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
