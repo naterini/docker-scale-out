@@ -104,7 +104,7 @@ RUN postconf -e "mydestination = login login.localdomain cluster scaleout localh
 
 #Install OpenAPI generator jar directly (installing from source is very slow)
 RUN mkdir -p /usr/local/jar/
-RUN curl -s https://oss.sonatype.org/content/repositories/snapshots/org/openapitools/openapi-generator-cli/5.2.0-SNAPSHOT/openapi-generator-cli-5.2.0-20210629.113810-140.jar -o /usr/local/jar/openapi-generator-cli.jar
+RUN curl -s https://oss.sonatype.org/content/repositories/snapshots/org/openapitools/openapi-generator-cli/5.3.0-SNAPSHOT/openapi-generator-cli-5.3.0-20210709.165133-1.jar -o /usr/local/jar/openapi-generator-cli.jar
 RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
 #https://pypi.org/project/openapi-python-client/
 
