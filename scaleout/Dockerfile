@@ -1,5 +1,5 @@
 ARG DOCKER_FROM
-FROM ${DOCKER_FROM}
+FROM ${DOCKER_FROM} as base
 COPY profile.sh /etc/profile.d/container.sh
 # ood (open-ondemand user) is hardcoded to user 1000. must ensure uid is not different
 RUN groupadd -g 1000 ood && \
@@ -51,8 +51,6 @@ RUN git clone --depth 1 --single-branch -b master https://github.com/SchedMD/slu
 WORKDIR /usr/local/src/slurm
 RUN git config --global user.email "you@example.com" && \
 	git config --global user.name "scale out"
-COPY patch patch
-RUN test -s patch && (git am patch) || true
 RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-leak-debug --enable-developer --disable-optimizations --with-munge=/usr/local/ --prefix=/usr/local \
 	--sharedstatedir=/var/run/ \
 	--enable-pam --sysconfdir=/etc/slurm --with-hdf5=/usr/local/bin/h5cc >/dev/null && \
@@ -253,6 +251,12 @@ COPY postfix.service /etc/systemd/system/postfix.service.d/local.conf
 RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
 	systemctl disable dnf-makecache.timer && \
 	systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
+
+FROM base as scaleout
+
+COPY patch patch
+RUN test -s patch && (git am patch && make -make -j >/dev/null && make install >/dev/null) || true
+
 COPY nodelist /etc/nodelist
 
 RUN systemctl enable munge
