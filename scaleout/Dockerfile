@@ -254,8 +254,8 @@ RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
 
 FROM base as scaleout
 
-COPY patch patch
-RUN test -s patch && (git am patch && make -make -j >/dev/null && make install >/dev/null) || true
+COPY patch /usr/local/src/slurm/patch
+RUN bash -c "if [ -s /usr/local/src/slurm/patch ]; then cd /usr/local/src/slurm/; git am /usr/local/src/slurm/patch && make -j >/dev/null && make install >/dev/null; fi"
 
 COPY nodelist /etc/nodelist
 
