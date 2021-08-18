@@ -199,11 +199,6 @@ RUN mkdir -p /etc/PDSH && \
 RUN mandb
 
 RUN mkdir -p -m 0777 /lab_scripts
-COPY lab_scripts/* /lab_scripts/
-COPY slurm/ /etc/slurm/
-RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
-	chmod 0600 /etc/slurm/slurmdbd.conf && \
-	chown slurm:slurm /etc/slurm/slurmdbd.conf
 COPY my.cnf /etc/
 RUN sed -e "s#{SUBNET}#${SUBNET}#g" -i /etc/my.cnf
 RUN ln -s /etc/my.cnf /usr/local/etc/my.cnf
@@ -258,6 +253,11 @@ COPY patch /usr/local/src/slurm/patch
 RUN bash -c "if [ -s /usr/local/src/slurm/patch ]; then cd /usr/local/src/slurm/; git am /usr/local/src/slurm/patch && make -j >/dev/null && make install >/dev/null; fi"
 
 COPY nodelist /etc/nodelist
+COPY lab_scripts/* /lab_scripts/
+COPY slurm/ /etc/slurm/
+RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
+	chmod 0600 /etc/slurm/slurmdbd.conf && \
+	chown slurm:slurm /etc/slurm/slurmdbd.conf
 
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
