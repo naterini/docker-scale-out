@@ -196,6 +196,7 @@ $HOSTLIST
       - etc-slurm:/etc/slurm
       - /dev/log:/dev/log
       - mail:/var/spool/mail/
+      - src:/usr/local/src/
 $SYSDFSMOUNTS
 $LOGGING
     depends_on:
