@@ -20,7 +20,10 @@ RUN dnf -y install \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
-	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel
+	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel \
+	python3-virtualenv python3-setuptools-wheel python3-pip-wheel \
+	python3-urllib3 python3-six
+RUN pip3 install certifi pip wheel setuptools
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /usr/local/src/libjwt/
 WORKDIR /usr/local/src/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
