@@ -16,23 +16,20 @@ RUN dnf -y install \
 	libcurl-devel freeipmi-devel numactl-devel lynx numactl \
 	rdma-core-devel gcc-c++ flex libgcrypt-devel gcc-gfortran \
 	strace ltrace gdb valgrind wget cmake sudo jansson-devel \
-	openssh-server pam-devel xterm oniguruma-devel ruby \
+	openssh-server pam-devel xterm oniguruma-devel \
 	lua-devel xauth man mailx postfix python3 http-parser-devel \
 	libyaml-devel mlocate gettext-devel texinfo java-11-openjdk \
 	systemd net-tools socat jq squashfs-tools fuse-overlayfs pigz \
 	fuse-devel.x86_64 rpcgen.x86_64 cronie valgrind-devel \
 	python3-virtualenv python3-setuptools-wheel python3-pip-wheel \
 	python3-urllib3 python3-six
-RUN pip3 install certifi pip wheel setuptools
+RUN pip3 install certifi pip wheel setuptools markdown
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git /usr/local/src/libjwt/
 WORKDIR /usr/local/src/libjwt
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ && make -j && make install
 RUN git clone --depth 1 --single-branch -b jq-1.6 https://github.com/stedolan/jq.git /usr/local/src/jq/
 WORKDIR /usr/local/src/jq
 RUN autoreconf --force --install && ./configure --prefix=/usr/local --sysconfdir=/etc/ --disable-maintainer-mode && make -j && make install
-RUN git clone --depth 1 --single-branch -b 1.0.15 https://github.com/ttscoff/mdless.git /usr/local/src/mdless/
-WORKDIR /usr/local/src/mdless
-RUN gem install mdless
 RUN git clone --depth 1 --single-branch -b munge-0.5.13 https://github.com/dun/munge.git /usr/local/src/munge/
 WORKDIR /usr/local/src/munge/
 RUN autoreconf -i && ./configure --localstatedir=/var --prefix=/usr/local --sysconfdir=/etc/ >/dev/null && make -j >/dev/null && make install >/dev/null
