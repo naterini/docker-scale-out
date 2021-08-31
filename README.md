@@ -12,16 +12,21 @@ Maria Database Node:
   * db
 
 Slurm Management Nodes:
-  * slurmctld
-  * slurmctld2
-  * slurmdb
+  * mgmtnode
+  * mgmtnode2
   * slurmdbd
 
 Compute Nodes:
-  * node[1-50]
+  * node[00-09]
 
 Login Nodes:
   * login
+
+Nginx Proxy node:
+ * proxy
+
+Rest API Nodes:
+  * rest
 
 Kibana:
   * View http://localhost:5601/
@@ -45,12 +50,6 @@ Open XDMoD:
 Proxy:
   * Auth REST API http://localhost:8080/auth
   * Query REST API http://localhost:8080/slurm/
-
-Nginx Proxy node:
- * proxy
-
-Rest API Nodes:
-  * rest
 
 ## Multiple Instances
 Each cluster must have a unique class B subnet.
