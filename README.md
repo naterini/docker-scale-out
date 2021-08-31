@@ -177,14 +177,14 @@ docker network prune -f
 sudo systemctl restart docker
 ```
 
-## To save all images
+## To save all images to ./scaleout.tar
 
 ```
-docker save -o scaleout.tar $(docker-compose config | awk '{if ($1 == "image:") print $2;}')
+make save
 ```
 
 ## To load saved copy of all images
 
 ```
-docker load < scaleout.tar
+make load
 ```
