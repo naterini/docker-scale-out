@@ -39,6 +39,9 @@ Open On-Demand:
   * User: {user name - "fred" or "wilma"}
   * Password: password
 
+Open XDMoD:
+  * View http://localhost:8082/
+
 Proxy:
   * Auth REST API http://localhost:8080/auth
   * Query REST API http://localhost:8080/slurm/
