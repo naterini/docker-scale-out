@@ -1,5 +1,6 @@
 HOST ?= mgmtnode
 BUILD ?= up --build --remove-orphans -d
+IMAGES := $(shell docker-compose config | awk '{if ($$1 == "image:") print $$2;}' | sort | uniq)
 
 .EXPORT_ALL_VARIABLES:
 SUBNET=10.11
@@ -29,7 +30,7 @@ uninstall:
 	docker-compose down --rmi all --remove-orphans -t1 -v
 	docker-compose rm -v
 
-run: build
+run: ./docker-compose.yml
 	docker-compose up --remove-orphans -d
 
 cloud:
@@ -43,3 +44,9 @@ cloud:
 
 bash:
 	docker-compose exec $(HOST) /bin/bash
+
+save: build
+	docker save -o scaleout.tar $(IMAGES)
+
+load:
+	docker load -i scaleout.tar

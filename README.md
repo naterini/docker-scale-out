@@ -12,16 +12,21 @@ Maria Database Node:
   * db
 
 Slurm Management Nodes:
-  * slurmctld
-  * slurmctld2
-  * slurmdb
+  * mgmtnode
+  * mgmtnode2
   * slurmdbd
 
 Compute Nodes:
-  * node[1-50]
+  * node[00-09]
 
 Login Nodes:
   * login
+
+Nginx Proxy node:
+ * proxy
+
+Rest API Nodes:
+  * rest
 
 Kibana:
   * View http://localhost:5601/
@@ -39,15 +44,12 @@ Open On-Demand:
   * User: {user name - "fred" or "wilma"}
   * Password: password
 
+Open XDMoD:
+  * View http://localhost:8082/
+
 Proxy:
   * Auth REST API http://localhost:8080/auth
   * Query REST API http://localhost:8080/slurm/
-
-Nginx Proxy node:
- * proxy
-
-Rest API Nodes:
-  * rest
 
 ## Multiple Instances
 Each cluster must have a unique class B subnet.
@@ -175,14 +177,14 @@ docker network prune -f
 sudo systemctl restart docker
 ```
 
-## To save all images
+## To save all images to ./scaleout.tar
 
 ```
-docker save -o scaleout.tar $(docker-compose config | awk '{if ($1 == "image:") print $2;}')
+make save
 ```
 
 ## To load saved copy of all images
 
 ```
-docker load < scaleout.tar
+make load
 ```
