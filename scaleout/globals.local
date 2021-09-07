@@ -7,3 +7,4 @@ set src_dir "usr/local/src/slurm/"
 set partition "debug"
 set use_pmi 1
 set testsuite_cleanup_on_failure false
+set testsuite_user "slurm"
