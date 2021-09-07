@@ -6,7 +6,7 @@ IMAGES := $(shell docker-compose config | awk '{if ($$1 == "image:") print $$2;}
 SUBNET=10.11
 SUBNET6=2001:db8:1:1::
 
-default: run
+default: ./docker-compose.yml run
 
 ./docker-compose.yml: buildout.sh
 	bash buildout.sh > ./docker-compose.yml
