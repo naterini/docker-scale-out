@@ -23,11 +23,16 @@ then
     ports:
       - 8081:80
 "
+	XDMOD_PORTS="
+    ports:
+      - 8082:80
+"
 else
 	ES_PORTS=
 	KIBANA_PORTS=
 	PROXY_PORTS=
 	GRAFANA_PORTS=
+	XDMOD_PORTS=
 fi
 
 SUBNET=${SUBNET:-"10.11"}
@@ -595,6 +600,7 @@ $HOSTLIST
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
       - xdmod:/xdmod/
+$XDMOD_PORTS
 $LOGGING
 $HOSTLIST
 EOF
