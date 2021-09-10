@@ -59,7 +59,8 @@ RUN ./configure --enable-slurmrestd --enable-multiple-slurmd --enable-memory-lea
 RUN /usr/sbin/groupadd -r slurm -g 1001 && \
 	/usr/sbin/useradd -c "scheduler daemon" -d "/usr/local/src/slurm/testsuite/expect" -g slurm -s /bin/bash -u 1001 -r slurm && \
 	/usr/sbin/groupadd -r slurmrestd -g 1002 && \
-	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd
+	/usr/sbin/useradd -c "REST daemon" -d "/etc/slurm" -g slurmrestd -s /bin/bash -u 1002 -r slurmrestd && \
+	echo 'slurm        ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers
 RUN mkdir -p /var/spool/slurm/statesave /var/spool/slurm/spool
 RUN chown slurm:slurm -R /var/spool/slurm
 RUN /usr/sbin/groupadd -r munge
