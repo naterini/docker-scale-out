@@ -89,8 +89,9 @@ HOSTLIST="    extra_hosts:
 "
 
 LOGGING="
+    tty: true
     logging:
-      driver: journald
+      driver: local
     cap_add:
       - SYS_PTRACE
       - SYS_ADMIN
