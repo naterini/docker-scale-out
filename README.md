@@ -132,7 +132,7 @@ ssh -o StrictHostKeyChecking=no -l fred 10.11.1.5 -X #use 'password'
 ```
 ## IPv6 configuration
 
-# IPv6 must be configured in docker: https://docs.docker.com/config/daemon/ipv6/
+IPv6 must be configured in docker: https://docs.docker.com/config/daemon/ipv6/
 
 ## Changes needed for sysctl.conf to make it run:
 ```
