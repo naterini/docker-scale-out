@@ -4,7 +4,7 @@ import os
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-# Defining the host is optional and defaults to http://localhost/slurm/v0.0.36
+# Defining the host is optional and defaults to http://localhost/slurm/v0.0.37
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
     host = "http://rest/",
