@@ -2,6 +2,8 @@
 ExecCondition=bash -c 'exec test $(hostname -s) = "mgmtnode" -o $(hostname -s) = "mgmtnode2"'
 ExecStartPre=chown -R slurm:slurm /auth /etc/slurm/
 ExecStartPre=chmod -R 0770 /auth
+ExecStartPre=touch /var/log/slurmctld.log
+ExecStartPre=chown slurm:slurm /var/log/slurmctld.log
 ExecStartPre=/usr/local/bin/slurmctld.startup.sh
 ExecStartPost=/usr/local/bin/slurmctld.startup2.sh
 PermissionsStartOnly=true
