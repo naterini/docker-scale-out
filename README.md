@@ -188,3 +188,11 @@ make save
 ```
 make load
 ```
+
+## How to disable buidling xdmod container
+
+This is will only disable attempts to build and start the container.
+
+```
+export DISABLE_XDMOD=1
+```

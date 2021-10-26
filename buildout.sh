@@ -115,6 +115,47 @@ SYSDFSMOUNTS="
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
 "
+
+XDMOD="
+  xdmod:
+    build:
+      context: ./xdmod
+      network: host
+    image: xdmod:latest
+    environment:
+      - SUBNET="${SUBNET}"
+      - SUBNET6="${SUBNET6}"
+      - container=docker
+    hostname: xdmod
+    command: ["/sbin/startup.sh"]
+    networks:
+      internal:
+        ipv4_address: ${SUBNET}.1.22
+        ipv6_address: ${SUBNET6}1:22
+    volumes:
+      - /dev/log:/dev/log
+# would use SYSDFSMOUNTS here but sysd in cent7 cant handle cgroup/systemd mount
+      - /tmp/
+      - /run/
+      - /run/lock/
+      - /etc/localtime:/etc/localtime:ro
+      - /sys/:/sys/:ro
+      - /sys/firmware
+      - /sys/kernel
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/fuse/:/sys/fs/fuse/
+      - /var/lib/journal
+      - xdmod:/xdmod/
+$XDMOD_PORTS
+$LOGGING
+$HOSTLIST
+"
+
+if [ "$DISABLE_XDMOD" ]
+then
+	XDMOD=""
+fi
+
 if [ "$CLOUD" ]
 then
 	CLOUD_MOUNTS="
@@ -572,38 +613,7 @@ ${PROXY_PORTS}
     depends_on:
       - "rest"
 $HOSTLIST
-  xdmod:
-    build:
-      context: ./xdmod
-      network: host
-    image: xdmod:latest
-    environment:
-      - SUBNET="${SUBNET}"
-      - SUBNET6="${SUBNET6}"
-      - container=docker
-    hostname: xdmod
-    command: ["/sbin/startup.sh"]
-    networks:
-      internal:
-        ipv4_address: ${SUBNET}.1.22
-        ipv6_address: ${SUBNET6}1:22
-    volumes:
-      - /dev/log:/dev/log
-# would use SYSDFSMOUNTS here but sysd in cent7 cant handle cgroup/systemd mount
-      - /tmp/
-      - /run/
-      - /run/lock/
-      - /etc/localtime:/etc/localtime:ro
-      - /sys/:/sys/:ro
-      - /sys/firmware
-      - /sys/kernel
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/fuse/:/sys/fs/fuse/
-      - /var/lib/journal
-      - xdmod:/xdmod/
-$XDMOD_PORTS
-$LOGGING
-$HOSTLIST
+$XDMOD
 EOF
 
 exit 0
