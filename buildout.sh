@@ -123,11 +123,11 @@ XDMOD="
       network: host
     image: xdmod:latest
     environment:
-      - SUBNET="${SUBNET}"
-      - SUBNET6="${SUBNET6}"
+      - SUBNET=\"${SUBNET}\"
+      - SUBNET6=\"${SUBNET6}\"
       - container=docker
     hostname: xdmod
-    command: ["/sbin/startup.sh"]
+    command: [\"/sbin/startup.sh\"]
     networks:
       internal:
         ipv4_address: ${SUBNET}.1.22
