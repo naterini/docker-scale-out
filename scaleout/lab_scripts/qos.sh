@@ -3,7 +3,7 @@
 # Script to setup for the QOS-based preemption lab
 
 echo "PriorityWeightQOS=1000000" >> /etc/slurm/slurm.conf
-scontrol shutdown
+/lab_scripts/restart.sh
 sleep 3
 #Create the QOSs:
 sacctmgr -i add qos high

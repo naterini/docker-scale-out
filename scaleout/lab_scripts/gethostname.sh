@@ -5,7 +5,6 @@
 #SBATCH --mail-user=fred@localhost # Send mail to fred
 #SBATCH --mail-type=BEGIN,END,FAIL # Send mail on begin, end, fail
 #SBATCH -t1  # Submit with 1 minute of walltime
-#SBATCH -l   # Print line numbers in output
 #SBATCH -o gethostname_%j.out # output goes to gethostname_<JOBID>.out
 #SBATCH -e gethostname_%j.err # error goes to gethostname_<JOBID>.err
 
