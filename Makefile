@@ -12,6 +12,7 @@ default: ./docker-compose.yml run
 	bash buildout.sh > ./docker-compose.yml
 
 build: ./docker-compose.yml
+	docker build -t centos8stream centos-stream/docker/
 	env COMPOSE_HTTP_TIMEOUT=3000 docker-compose $(BUILD)
 
 stop:

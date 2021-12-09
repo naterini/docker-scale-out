@@ -77,6 +77,7 @@ the following subnets:
 ## To build images
 
 ```
+git submodule update --init --recursive
 make build
 ```
 
