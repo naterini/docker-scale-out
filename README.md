@@ -190,6 +190,16 @@ make save
 make load
 ```
 
+## How to trigger manual xdmod data dump:
+
+```
+make bash
+exec bash /etc/cron.hourly/dump_xdmod.sh
+make HOST=xdmod bash
+sudo -u xdmod -- /usr/bin/xdmod-shredder -r scaleout -f slurm -i /xdmod/data.csv
+sudo -u xdmod -- /usr/bin/xdmod-ingestor
+```
+
 ## How to disable buidling xdmod container
 
 This is will only disable attempts to build and start the container.
