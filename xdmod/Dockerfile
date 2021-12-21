@@ -4,6 +4,8 @@ RUN yum update -y
 RUN yum upgrade -y
 RUN systemctl enable postfix.service mariadb.service httpd.service
 RUN sed -e 's#:443#:80#' -e 's#SSLEngine on#SSLEngine off#g' -i /etc/httpd/conf.d/xdmod.conf
+COPY resources.json /etc/xdmod/resources.json
+COPY resource_specs.json /etc/xdmod/resource_specs.json
 
 STOPSIGNAL SIGRTMIN+3
 VOLUME ["/tmp", "/run", "/run/lock"]
