@@ -211,3 +211,21 @@ This is will only disable attempts to build and start the container.
 ```
 export DISABLE_XDMOD=1
 ```
+
+## Docker may have issues with cgroupv2
+
+Add these settings to the docker configuration: /etc/docker/daemon.json
+```
+{
+  "exec-opts": [
+    "native.cgroupdriver=systemd"
+  ],
+  "features": {
+    "buildkit": true
+  },
+  "experimental": true,
+  "cgroup-parent": "docker.slice",
+  "default-cgroupns-mode": "host",
+  "storage-driver": "overlay2"
+}
+```

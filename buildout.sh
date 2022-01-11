@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#only mount cgroups with v1
+[ ! -f /sys/fs/cgroup/cgroup.controllers ] && CGROUP_MNTS="
+      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+      - /sys/fs/cgroup/systemd
+"
+
 DISTRO="centos8stream"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
 then
@@ -110,8 +116,7 @@ SYSDFSMOUNTS="
       - /sys/:/sys/:ro
       - /sys/firmware
       - /sys/kernel
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
+$CGROUP_MNTS
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
 "
@@ -142,7 +147,7 @@ XDMOD="
       - /sys/:/sys/:ro
       - /sys/firmware
       - /sys/kernel
-      - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
+$CGROUP_MNTS
       - /sys/fs/fuse/:/sys/fs/fuse/
       - /var/lib/journal
       - xdmod:/xdmod/
