@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DISTRO="centos:8"
+DISTRO="almalinux:8"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
 then
 	ES_PORTS="
