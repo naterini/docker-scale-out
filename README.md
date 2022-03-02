@@ -229,3 +229,15 @@ Add these settings to the docker configuration: /etc/docker/daemon.json
   "storage-driver": "overlay2"
 }
 ```
+
+## Kernel arguments to select cgroup version
+
+Run with cgroupsv2:
+```
+GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller=0"
+```
+
+Run with cgroupsv1:
+```
+GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller=0"
+```
