@@ -234,7 +234,7 @@ Add these settings to the docker configuration: /etc/docker/daemon.json
 
 Run with cgroupsv2:
 ```
-GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller=0"
+GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1 systemd.legacy_systemd_cgroup_controller=0"
 ```
 
 Run with cgroupsv1:
