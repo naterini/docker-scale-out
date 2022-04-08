@@ -212,7 +212,7 @@ This is will only disable attempts to build and start the container.
 export DISABLE_XDMOD=1
 ```
 
-## Docker may have issues with cgroupv2
+## Docker may have issues with Cgroup v2
 
 Add these settings to the docker configuration: /etc/docker/daemon.json
 ```
@@ -232,12 +232,12 @@ Add these settings to the docker configuration: /etc/docker/daemon.json
 
 ## Kernel arguments to select cgroup version
 
-Run with cgroupsv2:
+Run with Cgroup v2:
 ```
 GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1 systemd.legacy_systemd_cgroup_controller=0"
 ```
 
-Run with cgroupsv1:
+Run with Cgroup v1:
 ```
 GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller=0"
 ```
