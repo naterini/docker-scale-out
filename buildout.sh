@@ -6,6 +6,7 @@
       - /sys/fs/cgroup/systemd
 "
 
+SLURM_RELEASE="${SLURM_RELEASE:-master}"
 DISTRO="centos8stream"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
 then
@@ -231,6 +232,7 @@ $HOSTLIST
       context: ./scaleout
       args:
         DOCKER_FROM: $DISTRO
+        SLURM_RELEASE: $SLURM_RELEASE
         SUBNET: "$SUBNET"
         SUBNET6: "$SUBNET6"
       network: host

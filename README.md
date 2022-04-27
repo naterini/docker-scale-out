@@ -74,6 +74,11 @@ the following subnets:
 > ${SUBNET}.1.0/24
 > ${SUBNET6}1:0/122
 
+## Custom Slurm version
+
+To specify an explicit version of Slurm to be compiled and installed:
+> export SLURM_RELEASE=slurm-$version
+
 ## To build images
 
 ```
