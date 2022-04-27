@@ -6,6 +6,7 @@
       - /sys/fs/cgroup/systemd
 "
 
+CACHE_DESTROYER=$(stat --format=%Y scaleout/patch)
 SLURM_RELEASE="${SLURM_RELEASE:-master}"
 DISTRO="centos8stream"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
@@ -235,6 +236,7 @@ $HOSTLIST
         SLURM_RELEASE: $SLURM_RELEASE
         SUBNET: "$SUBNET"
         SUBNET6: "$SUBNET6"
+        CACHE_DESTROYER: "$CACHE_DESTROYER"
       network: host
     image: scaleout:latest
     environment:

@@ -250,9 +250,10 @@ RUN systemctl enable slurmdbd slurmctld slurmd slurmrestd postfix && \
 	systemctl mask systemd-udevd.service kdump.service systemd-tmpfiles-clean.timer  nis-domainname.service systemd-hwdb-update.service systemd-udev-trigger.service
 
 FROM base as scaleout
+ARG CACHE_DESTROYER
 
 COPY patch /usr/local/src/slurm/patch
-RUN bash -c "if [ -s /usr/local/src/slurm/patch ]; then cd /usr/local/src/slurm/; git am /usr/local/src/slurm/patch && make -j >/dev/null && make install >/dev/null; fi"
+RUN bash -c "if [ -s /usr/local/src/slurm/patch ]; then cd /usr/local/src/slurm/; echo $CACHE_DESTROYER >/dev/null; git pull origin ${SLURM_RELEASE}; git am /usr/local/src/slurm/patch && make -j >/dev/null && make install >/dev/null; fi"
 
 COPY nodelist /etc/nodelist
 COPY lab_scripts/* /lab_scripts/
