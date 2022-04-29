@@ -80,8 +80,8 @@ RUN git clone --depth 1 --single-branch -b pdsh-2.33 https://github.com/chaos/pd
 WORKDIR /usr/local/src/pdsh
 RUN autoreconf -i && ./configure --without-rsh --with-ssh --prefix=/usr/local --sysconfdir=/etc/ --with-readline && make -j >/dev/null && make install >/dev/null
 WORKDIR /usr/local/src/
-RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz' -O /usr/local/src/openmpi.tar.gz
-RUN tar -xzf /usr/local/src/openmpi.tar.gz
+RUN wget -q 'https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz' -O /usr/local/src/openmpi.tar.gz && \
+	tar -xzf /usr/local/src/openmpi.tar.gz
 WORKDIR /usr/local/src/openmpi-4.1.1/
 RUN ./configure --prefix=/usr/local --with-pmix=/usr/local --with-pmix-libdir=/usr/local/lib --with-pmi=/usr/local --with-slurm --with-devel-headers --enable-debug --without-cma \
 	--with-libevent=/usr/local --with-libevent-header=/usr/local/include --with-libevent-libs=/usr/local/lib --with-hwloc=/usr/local/ \
@@ -99,13 +99,13 @@ RUN postconf -e "mydestination = cluster scaleout localhost.localdomain localhos
 	postconf -e "mynetworks = 127.0.0.0/8, ${SUBNET}.0.0/16" && \
 	postconf -e "inet_interfaces = all" && \
 	postconf -e "recipient_delimiter = +"
-RUN newaliases
-RUN postconf -e "mydestination = login login.localdomain cluster scaleout localhost.localdomain, localhost"
+RUN newaliases && \
+	postconf -e "mydestination = login login.localdomain cluster scaleout localhost.localdomain, localhost"
 
 #Install OpenAPI generator jar directly (installing from source is very slow)
-RUN mkdir -p /usr/local/jar/
-RUN curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.3.1/openapi-generator-cli-4.3.1.jar -o /usr/local/jar/openapi-generator-cli.jar
-RUN echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
+RUN mkdir -p /usr/local/jar/ && \
+	curl -s https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.3.1/openapi-generator-cli-4.3.1.jar -o /usr/local/jar/openapi-generator-cli.jar && \
+	echo -e "#!/bin/bash\nexec java -jar /usr/local/jar/openapi-generator-cli.jar \$@" > /usr/local/bin/openapi-generator-cli && chmod 0755 /usr/local/bin/openapi-generator-cli
 #https://pypi.org/project/openapi-python-client/
 
 RUN git clone --depth 1 --single-branch -b v0.9.1 https://github.com/NVIDIA/pyxis.git /usr/local/src/pyxis
@@ -147,9 +147,8 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa && \
 	ssh-keygen -f /root/.ssh/id_ecdsa -N '' -t ecdsa && \
 	ssh-keygen -y -f /root/.ssh/id_ecdsa > /root/.ssh/id_ecdsa.pub && \
 	cat /root/.ssh/id_ecdsa.pub >> /root/.ssh/authorized_keys && \
-	chmod -R 0700 /root/.ssh
-
-RUN echo -n "ood" | passwd --stdin ood && \
+	chmod -R 0700 /root/.ssh && \
+	echo -n "ood" | passwd --stdin ood && \
 	mkdir -p /home/ood/.ssh && \
 	ssh-keygen -f /home/ood/.ssh/id_ecdsa -N '' -t ecdsa && \
 	ssh-keygen -y -f /home/ood/.ssh/id_ecdsa > /home/ood/.ssh/id_ecdsa.pub && \
@@ -172,8 +171,8 @@ RUN usermod -G managers fred && \
 	usermod -G managers barney
 
 #disable ssh host auth checks
-RUN echo -e '\nNoHostAuthenticationForLocalhost=yes\nStrictHostKeyChecking=no' >> /etc/ssh/ssh_config
-RUN echo -e '\nAddressFamily any\nUseDNS no' >> /etc/ssh/sshd_config
+RUN echo -e '\nNoHostAuthenticationForLocalhost=yes\nStrictHostKeyChecking=no' >> /etc/ssh/ssh_config && \
+	echo -e '\nAddressFamily any\nUseDNS no' >> /etc/ssh/sshd_config
 
 #override the ssh host keys to be known
 RUN awk '{print "*", $1, $2}' </etc/ssh/ssh_host_ecdsa_key.pub >> /etc/ssh/ssh_known_hosts
@@ -183,27 +182,24 @@ RUN echo -e '+:wheel:ALL\n+:slurm:ALL\n-:ALL:ALL' > /etc/security/access.conf &&
 	chmod 0700 /etc/security/access.conf && \
 	echo -e '#%PAM-1.0\naccount    sufficient      pam_access.so\naccount    sufficient   pam_slurm_adopt.so\n' | \
 	cat - /etc/pam.d/sshd > /etc/pam.d/sshd2 && \
-	mv /etc/pam.d/sshd2 /etc/pam.d/sshd
-
-RUN echo -e 'SlurmdSpoolDir=/var/spool/slurm/spool' > /etc/nss_slurm.conf
+	mv /etc/pam.d/sshd2 /etc/pam.d/sshd && \
+	echo -e 'SlurmdSpoolDir=/var/spool/slurm/spool' > /etc/nss_slurm.conf
 
 #active slurm nss
 RUN awk '{if (match($1, /^(passwd|group)/)) {print $1, "slurm", $2, $3} else {print $0}}' > /etc/nsswitch2.conf </etc/nsswitch.conf && \
-	mv /etc/nsswitch2.conf /etc/nsswitch.conf
-
-RUN mkdir -p /etc/PDSH && \
+	mv /etc/nsswitch2.conf /etc/nsswitch.conf && \
+	mkdir -p /etc/PDSH && \
 	echo -e "node00\nnode01\nnode02\nnode03\nnode04\nnode05\nnode06\nnode07\nnode08\nnode09" > /etc/PDSH/hosts && \
 	echo -e "\nexport WCOLL=/etc/PDSH/hosts\n" >> /etc/bashrc && \
 	echo -e "\nalias cls='clear'\n" >> /etc/bashrc && \
 	echo -e "\nalias ..='cd ..'\n" >> /etc/bashrc && \
-	echo -e "\nalias l='ls -alF'\n" >> /etc/bashrc
+	echo -e "\nalias l='ls -alF'\n" >> /etc/bashrc && \
+	mandb && \
+	mkdir -p -m 0777 /lab_scripts
 
-RUN mandb
-
-RUN mkdir -p -m 0777 /lab_scripts
 COPY my.cnf /etc/
-RUN sed -e "s#{SUBNET}#${SUBNET}#g" -i /etc/my.cnf
-RUN ln -s /etc/my.cnf /usr/local/etc/my.cnf
+RUN sed -e "s#{SUBNET}#${SUBNET}#g" -i /etc/my.cnf && \
+	ln -s /etc/my.cnf /usr/local/etc/my.cnf
 COPY mysql /usr/local/bin/mysql
 COPY slurmctld.startup.sh /usr/local/bin/slurmctld.startup.sh
 COPY slurmctld.startup2.sh /usr/local/bin/slurmctld.startup2.sh
@@ -215,15 +211,14 @@ COPY slurmrestd.env /etc/sysconfig/slurmrestd
 RUN sed -e "s/{SUBNET}/${SUBNET}/" -i /etc/sysconfig/slurmrestd && \
 	chmod 0755 /usr/local/bin/*.sh
 
-RUN cp /usr/local/src/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system
-RUN echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh
-
-RUN chmod 0755 /usr/local/bin/mysql && \
+RUN cp /usr/local/src/slurm/etc/{slurmctld.service,slurmd.service,slurmdbd.service,slurmrestd.service}  /usr/lib/systemd/system && \
+	echo -e '#!/bin/bash\nset -o vi' > /etc/profile.d/mode.sh && \
+	chmod 0755 /usr/local/bin/mysql && \
 	chmod 0755 /usr/local/bin/slurmctld.startup.sh && \
 	chmod 0755 /usr/local/bin/slurmd.startup.sh && \
 	chmod 0755 /usr/local/bin/login.startup.sh && \
-	chmod 0755 /usr/local/bin/slurmrestd.startup.sh
-RUN mkdir -p /auth && chown -R slurm:slurm /auth && \
+	chmod 0755 /usr/local/bin/slurmrestd.startup.sh && \
+	mkdir -p /auth && chown -R slurm:slurm /auth && \
 	chmod 0755 /auth && \
 	chown -R slurm:slurm /usr/local/src/
 
@@ -260,9 +255,8 @@ COPY lab_scripts/* /lab_scripts/
 COPY slurm/ /etc/slurm/
 RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
 	chmod 0600 /etc/slurm/slurmdbd.conf && \
-	chown slurm:slurm /etc/slurm/slurmdbd.conf
-
-RUN systemctl enable munge
+	chown slurm:slurm /etc/slurm/slurmdbd.conf && \
+	systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
 VOLUME ["/tmp", "/run", "/run/lock"]
 COPY hosts.nodes /etc/
