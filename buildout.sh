@@ -6,7 +6,13 @@
       - /sys/fs/cgroup/systemd
 "
 
-CACHE_DESTROYER=$(stat --format=%Y scaleout/patch)
+if [ $MAC ]
+then
+  CACHE_DESTROYER=$(stat -f%c scaleout/patch)
+else
+  CACHE_DESTROYER=$(stat --format=%Y scaleout/patch)
+fi
+
 SLURM_RELEASE="${SLURM_RELEASE:-master}"
 DISTRO="centos8stream"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
