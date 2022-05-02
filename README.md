@@ -235,6 +235,15 @@ Add these settings to the docker configuration: /etc/docker/daemon.json
 }
 ```
 
+Make sure to run docker in it's own slice to avoid systemd conflicting with it:
+$ cat /etc/systemd/system/docker.slice
+[Unit]
+Description=docker slice
+Before=slices.target
+[Slice]
+CPUAccounting=true
+MemoryAccounting=true
+
 ## Kernel arguments to select cgroup version
 
 Run with Cgroup v2:
