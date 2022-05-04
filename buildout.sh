@@ -3,7 +3,6 @@
 #only mount cgroups with v1
 [ ! -f /sys/fs/cgroup/cgroup.controllers ] && CGROUP_MNTS="
       - /sys/fs/cgroup/:/sys/fs/cgroup/:ro
-      - /sys/fs/cgroup/systemd
 "
 
 if [ $MAC ]
