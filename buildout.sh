@@ -13,7 +13,7 @@ else
 fi
 
 SLURM_RELEASE="${SLURM_RELEASE:-master}"
-DISTRO="centos8stream"
+DISTRO="almalinux"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
 then
 	ES_PORTS="

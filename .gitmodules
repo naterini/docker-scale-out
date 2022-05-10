@@ -1,4 +1,0 @@
-[submodule "centos-stream"]
-	path = centos-stream
-	url = https://github.com/CentOS/sig-cloud-instance-images.git
-	branch = CentOS-8-Stream
