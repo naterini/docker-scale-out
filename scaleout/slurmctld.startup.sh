@@ -1,16 +1,14 @@
 #!/bin/bash
 #only configure once
 [ -f /var/run/slurmctld.startup ] && exit 0
-touch /var/run/slurmctld.startup
 
 sed -e '/^hosts:/d' -i /etc/nsswitch.conf
 echo 'hosts:      files myhostname' >> /etc/nsswitch.conf
 
-for ((i=1;i<=100;i++))
+while true
 do
 	sacctmgr show cluster &>/dev/null
 	[ $? -eq 0 ] && break
-	[ $i -eq 99 ] && echo echo "slurmdbd never started" && exit 127
 	sleep 5
 done
 
@@ -45,5 +43,7 @@ else
 		sleep 0.25
 	done
 fi
+
+touch /var/run/slurmctld.startup
 
 exit 0
