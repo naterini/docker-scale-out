@@ -2,3 +2,4 @@ docker-compose.yml
 scaleout/hosts.nodes
 cloud_socket
 scaleout.tar
+federation
