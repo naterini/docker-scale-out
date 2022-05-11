@@ -1,4 +1,6 @@
 #!/bin/bash
+unset MAC
+[[ $OSTYPE == 'darwin'* ]] && MAC=1
 
 #only mount cgroups with v1
 [ ! -f /sys/fs/cgroup/cgroup.controllers ] && CGROUP_MNTS="
