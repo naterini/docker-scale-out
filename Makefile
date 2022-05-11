@@ -3,8 +3,8 @@ BUILD ?= up --build --remove-orphans -d
 IMAGES := $(shell docker-compose config | awk '{if ($$1 == "image:") print $$2;}' | sort | uniq)
 
 .EXPORT_ALL_VARIABLES:
-SUBNET=10.11
-SUBNET6=2001:db8:1:1::
+SUBNET ?= 10.11
+SUBNET6 ?= 2001:db8:1:1::
 
 default: ./docker-compose.yml run
 
