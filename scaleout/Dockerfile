@@ -258,7 +258,8 @@ COPY lab_scripts/* /lab_scripts/
 COPY slurm/ /etc/slurm/
 RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
 	chmod 0600 /etc/slurm/slurmdbd.conf && \
-	chown slurm:slurm /etc/slurm/slurmdbd.conf
+	chown slurm:slurm /etc/slurm/slurmdbd.conf && \
+	chmod 4755 /bin/ping
 
 RUN systemctl enable munge
 STOPSIGNAL SIGRTMIN+3
