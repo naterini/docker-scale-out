@@ -256,7 +256,9 @@ COPY slurm/ /etc/slurm/
 RUN ln -nfs /usr/local/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf && \
 	chmod 0600 /etc/slurm/slurmdbd.conf && \
 	chown slurm:slurm /etc/slurm/slurmdbd.conf && \
-	systemctl enable munge
+	systemctl enable munge && \
+	chmod 4755 /bin/ping
+
 STOPSIGNAL SIGRTMIN+3
 VOLUME ["/tmp", "/run", "/run/lock"]
 COPY hosts.nodes /etc/
