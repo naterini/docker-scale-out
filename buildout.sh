@@ -14,7 +14,7 @@ else
   CACHE_DESTROYER=$(stat --format=%Y scaleout/patch)
 fi
 
-SLURM_RELEASE="${SLURM_RELEASE:-master}"
+SLURM_RELEASE="${SLURM_RELEASE:-slurm-22.05}"
 DISTRO="almalinux"
 if [ -z "$SUBNET" -o "$SUBNET" = "10.11" ]
 then
