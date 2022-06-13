@@ -8,7 +8,7 @@ RUN groupadd -g 1000 ood && \
 RUN dnf -y install 'dnf-command(config-manager)'
 RUN dnf -y install dnf-plugins-core
 RUN dnf config-manager --set-enabled powertools
-RUN dnf -y install --allowerasing \
+RUN dnf -y install --allowerasing --exclude google-chrome-\* \
 	rpm gcc automake make perl-macros.x86_64 rpm-build passwd \
 	readline-devel openssl-devel openssl pam-devel \
 	perl-ExtUtils-MakeMaker.noarch mariadb-devel mariadb \
