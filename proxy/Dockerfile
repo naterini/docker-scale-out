@@ -1,7 +1,7 @@
 FROM alpine
 RUN mkdir -p /run/nginx/ /var/www/html/validate /var/www/html/auth
 RUN mkdir -p /var/www/html/slurm
-RUN apk update && apk add nginx php7-fpm bash php7-session nginx-debug
+RUN apk update && apk add nginx php8-fpm bash php8-session nginx-debug
 RUN unlink /etc/nginx/http.d/default.conf
 COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY nginx.conf /etc/nginx/http.d/
